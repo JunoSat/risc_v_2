@@ -17,6 +17,9 @@ module hazard_unit (
     
     // Control hazard stall inputs
     input  wire       branch_taken,  // Driven from EX
+
+    // RV32M long cycle processing Request
+    input  wire       stall_ex_request,
     
     // Forwarding outputs
     output reg  [1:0] forward_a,
@@ -25,8 +28,10 @@ module hazard_unit (
     // Hazard outputs
     output reg        stall_if,
     output reg        stall_id,
+    output reg        stall_ex,
     output reg        flush_id,  // FLUSH ID/EX when load/use or branch
-    output reg        flush_if   // FLUSH IF/ID when branch taken
+    output reg        flush_if,  // FLUSH IF/ID when branch taken
+    output reg        flush_ex
 );
 
     always @(*) begin
@@ -61,8 +66,10 @@ module hazard_unit (
         // If ID/EX is reading memory and its destination matches IF/ID RS1 or RS2
         stall_if = 1'b0;
         stall_id = 1'b0;
+        stall_ex = 1'b0;
         flush_id = 1'b0;
         flush_if = 1'b0;
+        flush_ex = 1'b0;
 
         if (id_ex_mem_read && (id_ex_rd != 5'd0) && ((id_ex_rd == if_id_rs1) || (id_ex_rd == if_id_rs2))) begin
             stall_if = 1'b1;
@@ -70,6 +77,14 @@ module hazard_unit (
             flush_id = 1'b1; // Insert bubble in EX
         end
         
+        // --- Stall Logic (Mult/Div RV32M long cycle execution) ---
+        if (stall_ex_request) begin
+            stall_if = 1'b1; // Freeze fetch
+            stall_id = 1'b1; // Freeze decode
+            stall_ex = 1'b1; // Freeze EX so the instruction holds steady
+            flush_ex = 1'b1; // Push bubble to EX/MEM so bad memory writes aren't done every long cycle
+        end
+
         // --- Control Hazard Logic ---
         // Branches resolved in EX stage -> 2 cycle penalty (Flush IF/ID and ID/EX)
         if (branch_taken) begin

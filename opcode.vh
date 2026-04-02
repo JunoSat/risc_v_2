@@ -51,3 +51,23 @@ localparam  [ 2: 0] ADD     = 3'b000,    // inst[30] == 0: ADD, inst[31] == 1: S
                     SR      = 3'b101,    // inst[30] == 0: SRL, inst[31] == 1: SRA
                     OR      = 3'b110,
                     AND     = 3'b111;
+
+// FUNC3 for RV32M (M-Extension)
+localparam  [ 2: 0] MUL     = 3'b000,
+                    MULH    = 3'b001,
+                    MULHSU  = 3'b010,
+                    MULHU   = 3'b011,
+                    DIV     = 3'b100,
+                    DIVU    = 3'b101,
+                    REM     = 3'b110,
+                    REMU    = 3'b111;
+
+// SYSTEM Opcodes length
+localparam  [ 6: 0] SYSTEM  = 7'b1110011;
+localparam  [ 2: 0] PRIV    = 3'b000,
+                    CSRRW   = 3'b001,
+                    CSRRS   = 3'b010,
+                    CSRRC   = 3'b011,
+                    CSRRWI  = 3'b101,
+                    CSRRSI  = 3'b110,
+                    CSRRCI  = 3'b111;

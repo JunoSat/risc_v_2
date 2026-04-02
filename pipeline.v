@@ -35,16 +35,30 @@ module pipe #(
     // Wires
     // ----------------------------------------------------
     
-    // Hazard Unit Wires
-    wire [1:0] forward_a;
-    wire [1:0] forward_b;
+    // Hazard Unit Outputs
     wire stall_if_haz;
     wire stall_id_haz;
-    wire flush_id_haz;
+    wire stall_ex_haz;
     wire flush_if_haz;
-    
+    wire flush_id_haz;
+    wire flush_ex_haz;
+    wire [1:0] forward_a_sel;
+    wire [1:0] forward_b_sel;
+
+    // CSR Wires
+    wire [11:0] id_csr_addr, ex_csr_addr, mem_csr_addr, wb_csr_addr;
+    wire        id_is_csr, ex_is_csr;
+    wire        ex_csr_we, mem_csr_we, wb_csr_we;
+    wire [31:0] ex_csr_wdata, mem_csr_wdata, wb_csr_wdata;
+    wire [31:0] csr_rdata;
+    wire        id_mult_div_en, ex_mult_div_en;
+    wire        stall_ex_request;
+
+    // Merged stales
     wire stage_stall_if = stall | stall_if_haz;
     wire stage_stall_id = stall | stall_id_haz;
+    wire stage_stall_ex = stall | stall_ex_haz;
+    wire stage_flush_ex = flush_ex_haz;
     
     // IF Wires
     wire [31:0] if_pc_out;
@@ -150,26 +164,51 @@ module pipe #(
     // Modules
     // ----------------------------------------------------
 
-    hazard_unit u_hazard (
+    hazard_unit u_hazard_unit (
         .id_ex_rs1        (ex_rs1),
         .id_ex_rs2        (ex_rs2),
-        .ex_mem_rd        (mem_rd),
-        .ex_mem_reg_write (mem_alu_to_reg),
-        .mem_wb_rd        (wb_rd),
-        .mem_wb_reg_write (wb_alu_to_reg),
-        
+        .id_ex_mem_read   (ex_mem_read),
+        .id_ex_rd         (ex_rd),
         .if_id_rs1        (id_rs1),
         .if_id_rs2        (id_rs2),
-        .id_ex_rd         (ex_rd),
-        .id_ex_mem_read   (ex_mem_read),
-        .branch_taken     (branch_taken),
         
-        .forward_a        (forward_a),
-        .forward_b        (forward_b),
+        .ex_mem_reg_write (mem_alu_to_reg),
+        .ex_mem_rd        (mem_rd),
+        .mem_wb_reg_write (wb_alu_to_reg),
+        .mem_wb_rd        (wb_rd),
+        
+        .branch_taken     (branch_taken),
+        .stall_ex_request (stall_ex_request),
+        
         .stall_if         (stall_if_haz),
         .stall_id         (stall_id_haz),
+        .stall_ex         (stall_ex_haz),
+        .flush_if         (flush_if_haz),
         .flush_id         (flush_id_haz),
-        .flush_if         (flush_if_haz)
+        .flush_ex         (flush_ex_haz),
+        
+        .forward_a        (forward_a_sel),
+        .forward_b        (forward_b_sel)
+    );
+
+    // ----------------------------------------------------
+    // CSR File
+    // ----------------------------------------------------
+    csr_file u_csr_file (
+        .clk              (clk),
+        .reset            (reset),
+        
+        .csr_raddr        (ex_csr_addr),
+        .csr_rdata        (csr_rdata),
+        
+        .csr_we           (wb_csr_we),
+        .csr_waddr        (wb_csr_addr),
+        .csr_wdata        (wb_csr_wdata),
+        
+        .exception_trigger(1'b0),
+        .exception_cause  (32'b0),
+        .exception_pc     (32'b0),
+        .exception_vector ()
     );
 
     if_stage #( .RESET_PC(RESET) ) u_if_stage (
@@ -212,13 +251,16 @@ module pipe #(
         .src2_sel      (id_rs2),
         .dest_reg_sel  (id_rd),
         .alu_op        (id_alu_op),
-        .illegal_inst  (id_illegal_inst)
+        .illegal_inst  (id_illegal_inst),
+        .mult_div_en   (id_mult_div_en),
+        .is_csr        (id_is_csr),
+        .csr_addr      (id_csr_addr)
     );
 
     id_ex_reg u_id_ex_reg (
         .clk             (clk),
         .reset           (reset),
-        .stall           (stall),
+        .stall           (stage_stall_ex),
         .flush           (flush_id_haz),
         
         .pc_i            (id_pc),
@@ -241,6 +283,10 @@ module pipe #(
         .mem_to_reg_i    (id_mem_to_reg),
         .arithsubtype_i  (id_arithsubtype),
         .illegal_inst_i  (id_illegal_inst),
+        
+        .mult_div_en_i   (id_mult_div_en),
+        .is_csr_i        (id_is_csr),
+        .csr_addr_i      (id_csr_addr),
 
         .pc_o            (ex_pc),
         .immediate_o     (ex_immediate),
@@ -261,10 +307,17 @@ module pipe #(
         .mem_read_o      (ex_mem_read),
         .mem_to_reg_o    (ex_mem_to_reg),
         .arithsubtype_o  (ex_arithsubtype),
-        .illegal_inst_o  (ex_illegal_inst)
+        .illegal_inst_o  (ex_illegal_inst),
+        
+        .mult_div_en_o   (ex_mult_div_en),
+        .is_csr_o        (ex_is_csr),
+        .csr_addr_o      (ex_csr_addr)
     );
 
     ex_stage u_ex_stage (
+        .clk                (clk), // Added for CSR & Mult/Div
+        .reset              (reset),
+        
         .pc_i               (ex_pc),
         .immediate_i        (ex_immediate),
         .reg_rdata1_i       (ex_reg_rdata1),
@@ -278,19 +331,28 @@ module pipe #(
         .branch_i           (ex_branch),
         .arithsubtype_i     (ex_arithsubtype),
         
+        .mult_div_en_i      (ex_mult_div_en),
+        .is_csr_i           (ex_is_csr),
+        .csr_addr_i         (ex_csr_addr),
+        .csr_rdata_i        (csr_rdata),
+        
         // Forwarding
-        .forward_a          (forward_a),
-        .forward_b          (forward_b),
+        .forward_a          (forward_a_sel),
+        .forward_b          (forward_b_sel),
         .forward_ex_mem_val (mem_ex_result),
         .forward_mem_wb_val (wb_result),
 
         .ex_result          (ex_result_calc),
         .write_data_out     (ex_write_data_calc),
         .branch_taken       (branch_taken),
-        .branch_target      (branch_target)
+        .branch_target      (branch_target),
+        
+        .stall_ex_request   (stall_ex_request),
+        .csr_we             (ex_csr_we),
+        .csr_wdata          (ex_csr_wdata)
     );
 
-    wire ex_alu_to_reg = (ex_alu | ex_lui | ex_jal | ex_jalr | ex_mem_to_reg);
+    wire ex_alu_to_reg = (ex_alu | ex_lui | ex_jal | ex_jalr | ex_mem_to_reg | ex_is_csr | ex_mult_div_en);
 
     ex_mem_reg u_ex_mem_reg (
         .clk            (clk),
@@ -305,6 +367,11 @@ module pipe #(
         .mem_to_reg_i   (ex_mem_to_reg),
         .alu_to_reg_i   (ex_alu_to_reg),
         .stall          (stall),
+        .flush          (stage_flush_ex),
+        
+        .csr_we_i       (ex_csr_we),
+        .csr_wdata_i    (ex_csr_wdata),
+        .csr_addr_i     (ex_csr_addr),
 
         .ex_result_o    (mem_ex_result),
         .write_data_o   (mem_write_data),
@@ -313,7 +380,11 @@ module pipe #(
         .mem_write_o    (mem_mem_write),
         .mem_read_o     (mem_mem_read),
         .mem_to_reg_o   (mem_mem_to_reg),
-        .alu_to_reg_o   (mem_alu_to_reg)
+        .alu_to_reg_o   (mem_alu_to_reg),
+        
+        .csr_we_o       (mem_csr_we),
+        .csr_wdata_o    (mem_csr_wdata),
+        .csr_addr_o     (mem_csr_addr)
     );
 
     mem_stage u_mem_stage (
@@ -343,13 +414,21 @@ module pipe #(
         .alu_op_i                  (mem_alu_op),
         .mem_read_address_offset_i (mem_ex_result[1:0]),
         .stall                     (stall),
+        
+        .csr_we_i                  (mem_csr_we),
+        .csr_wdata_i               (mem_csr_wdata),
+        .csr_addr_i                (mem_csr_addr),
 
         .ex_result_o               (wb_ex_result),
         .dest_reg_sel_o            (wb_rd),
         .mem_to_reg_o              (wb_mem_to_reg),
         .alu_to_reg_o              (wb_alu_to_reg),
         .alu_op_o                  (wb_alu_op),
-        .mem_read_address_offset_o (wb_mem_read_offset)
+        .mem_read_address_offset_o (wb_mem_read_offset),
+        
+        .csr_we_o                  (wb_csr_we),
+        .csr_wdata_o               (wb_csr_wdata),
+        .csr_addr_o                (wb_csr_addr)
     );
 
     wb_stage u_wb_stage (

@@ -30,6 +30,11 @@ module id_ex_reg (
     input  wire        arithsubtype_i,
     input  wire        illegal_inst_i,
 
+    // RV32M and CSRs
+    input  wire        mult_div_en_i,
+    input  wire        is_csr_i,
+    input  wire [11:0] csr_addr_i,
+
     // Outputs to EX
     output reg  [31:0] pc_o,
     output reg  [31:0] immediate_o,
@@ -50,7 +55,11 @@ module id_ex_reg (
     output reg         mem_read_o,
     output reg         mem_to_reg_o,
     output reg         arithsubtype_o,
-    output reg         illegal_inst_o
+    output reg         illegal_inst_o,
+
+    output reg         mult_div_en_o,
+    output reg         is_csr_o,
+    output reg  [11:0] csr_addr_o
 );
 
     always @(posedge clk or negedge reset) begin
@@ -75,6 +84,10 @@ module id_ex_reg (
             mem_to_reg_o    <= 1'b0;
             arithsubtype_o  <= 1'b0;
             illegal_inst_o  <= 1'b0;
+            
+            mult_div_en_o   <= 1'b0;
+            is_csr_o        <= 1'b0;
+            csr_addr_o      <= 12'h0;
         end
         else if (flush) begin
             pc_o            <= 32'h0;
@@ -97,6 +110,10 @@ module id_ex_reg (
             mem_to_reg_o    <= 1'b0;
             arithsubtype_o  <= 1'b0;
             illegal_inst_o  <= 1'b0;
+            
+            mult_div_en_o   <= 1'b0;
+            is_csr_o        <= 1'b0;
+            csr_addr_o      <= 12'h0;
         end
         else if (!stall) begin
             pc_o            <= pc_i;
@@ -119,6 +136,10 @@ module id_ex_reg (
             mem_to_reg_o    <= mem_to_reg_i;
             arithsubtype_o  <= arithsubtype_i;
             illegal_inst_o  <= illegal_inst_i;
+            
+            mult_div_en_o   <= mult_div_en_i;
+            is_csr_o        <= is_csr_i;
+            csr_addr_o      <= csr_addr_i;
         end
     end
 

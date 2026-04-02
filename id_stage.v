@@ -18,7 +18,12 @@ module id_stage (
     output wire [4:0]  src2_sel,
     output wire [4:0]  dest_reg_sel,
     output wire [2:0]  alu_op,
-    output reg         illegal_inst
+    output reg         illegal_inst,
+    
+    // RV32M and CSR extensions
+    output wire        mult_div_en,
+    output wire        is_csr,
+    output wire [11:0] csr_addr
 );
 
     `include "opcode.vh"
@@ -32,7 +37,7 @@ module id_stage (
     wire [6:0] opcode   = instruction_i[`OPCODE];
 
     // Control signals
-    assign immediate_sel = (opcode == JALR) || (opcode == LOAD) || (opcode == ARITHI);
+    assign immediate_sel = (opcode == JALR) || (opcode == LOAD) || (opcode == ARITHI) || (opcode == SYSTEM);
     assign alu          = (opcode == ARITHI) || (opcode == ARITHR);
     assign lui          = (opcode == LUI);
     assign jal          = (opcode == JAL);
@@ -42,6 +47,10 @@ module id_stage (
     assign mem_read     = (opcode == LOAD);
     assign mem_to_reg   = (opcode == LOAD);
     assign arithsubtype = instruction_i[`SUBTYPE] && !(opcode == ARITHI && alu_op == ADD);
+
+    assign mult_div_en  = (opcode == ARITHR) && (instruction_i[31:25] == 7'b0000001);
+    assign is_csr       = (opcode == SYSTEM) && (alu_op != PRIV);
+    assign csr_addr     = instruction_i[31:20];
 
     always @(*) begin
         immediate    = 32'h0;
@@ -56,6 +65,7 @@ module id_stage (
             ARITHR: immediate = 32'h0;
             LUI:    immediate = {instruction_i[31:12], 12'b0};
             JAL:    immediate = {{12{instruction_i[31]}}, instruction_i[19:12], instruction_i[20], instruction_i[30:21], 1'b0};
+            SYSTEM: immediate = {27'b0, instruction_i[19:15]}; // zimm for CSRR*I
             default: illegal_inst = 1'b1;
         endcase
     end
