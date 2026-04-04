@@ -366,7 +366,7 @@ module pipe #(
         .mem_read_i     (ex_mem_read && !stall),
         .mem_to_reg_i   (ex_mem_to_reg),
         .alu_to_reg_i   (ex_alu_to_reg),
-        .stall          (stall),
+        .stall          (stall | stall_ex_haz),
         .flush          (stage_flush_ex),
         
         .csr_we_i       (ex_csr_we),

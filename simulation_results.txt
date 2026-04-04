@@ -1,14 +1,11 @@
-time:               0 ,result =        0
-next_pc = 00000004
-next_pc = 00000008
-next_pc = 0000000c
-next_pc = 00000010
-next_pc = 00000014
-next_pc = 00000018
-next_pc = 0000001c
-next_pc = 00000020
-next_pc = 00000024
-next_pc = 00000028
-next_pc = 0000002c
-All instructions are Fetched
-next_pc = 00000000
+=== STARTING MULT/DIV TESTS ===
+DIV ( 7 / 3):           7,           3 -> Result:           2 (0x00000002)
+DIV (-8 / 3):          -8,           3 -> Result:          -2 (0xfffffffe)
+DIV (-8 / -3):          -8,          -3 -> Result:           2 (0x00000002)
+REM ( 7 % 3):           7,           3 -> Result:           1 (0x00000001)
+REM (-8 % 3):          -8,           3 -> Result:          -2 (0xfffffffe)
+REM (-8 % -3):          -8,          -3 -> Result:          -2 (0xfffffffe)
+MUL ( 7 * 3):           7,           3 -> Result:          21 (0x00000015)
+MUL (-8 * 3):          -8,           3 -> Result:         -24 (0xffffffe8)
+MUL (-8 * -3):          -8,          -3 -> Result:          24 (0x00000018)
+=== TESTS COMPLETE ===

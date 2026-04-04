@@ -176,7 +176,8 @@ module mult_div (
                 end
                 
                 STATE_DONE: begin
-                    state <= STATE_IDLE;
+                    if (start) state <= STATE_DONE; // Stay here while start is high
+                    else state <= STATE_IDLE;      // Only return to idle when start is dropped
                 end
             endcase
         end
