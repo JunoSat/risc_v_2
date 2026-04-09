@@ -13,7 +13,7 @@ module instr_mem (
 	// FPGA ROM initialization
 	// Initialize instruction memory from hex file (simulation / FPGA)
 	initial begin
-    	$readmemh("imem.hex", imem);
+    	$readmemh("C:/Users/Ruchi/HWLabProject/sat/risc_v_2/imem.hex", imem);
 	end
 
 	// Synchronous instruction fetch

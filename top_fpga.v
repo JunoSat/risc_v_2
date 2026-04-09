@@ -45,7 +45,7 @@ module top_fpga #(
     // UART hardware wires
     wire [7:0] uart_rx_data;
     wire       uart_rx_ready;
-    wire       uart_tx_busy;
+    wire       uart_tx_full;
     
     // Write registers (0x8000_0000 = TX Data transfer)
     wire uart_tx_start = uart_we && (dmem_write_address[7:0] == 8'h00);
@@ -55,7 +55,7 @@ module top_fpga #(
     
     // Read Multiplexer (Routes UART Status/Data back to Pipeline safely, otherwise maps BRAM)
     assign dmem_read_data_pipe = (dmem_read_address[31:28] == 4'h8) ? 
-                                 ((dmem_read_address[7:0] == 8'h08) ? {30'b0, uart_rx_ready, uart_tx_busy} : 
+                                 ((dmem_read_address[7:0] == 8'h08) ? {30'b0, uart_rx_ready, uart_tx_full} : 
                                   (dmem_read_address[7:0] == 8'h04) ? {24'b0, uart_rx_data} : 32'h0) 
                                  : dmem_read_data_bram;
 
@@ -80,7 +80,7 @@ module top_fpga #(
         .tx         (uart_tx),
         .tx_data    (dmem_write_data[7:0]),
         .tx_start   (uart_tx_start),
-        .tx_busy    (uart_tx_busy),
+        .tx_full    (uart_tx_full),
         .rx_data    (uart_rx_data),
         .rx_ready   (uart_rx_ready),
         .rx_ack     (uart_rx_ack)

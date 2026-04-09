@@ -29,5 +29,9 @@ set_property PACKAGE_PIN V11 [get_ports {led[15]}]
 
 set_property IOSTANDARD LVCMOS33 [get_ports led[*]]
 
+################ USB-UART #################
+set_property PACKAGE_PIN C4 [get_ports uart_rx]
+set_property IOSTANDARD LVCMOS33 [get_ports uart_rx]
 
-
+set_property PACKAGE_PIN D4 [get_ports uart_tx]
+set_property IOSTANDARD LVCMOS33 [get_ports uart_tx]
