@@ -1,0 +1,76 @@
+See this after reading the uart_docs.
+
+
+Setting up PuTTY is the final bridge between your Artix-7 hardware and your computer screen. Since your UART is configured for 115200 baud, follow these steps to get the communication line open.
+
+1. Download and Install
+Go to the https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html 
+Download the 64-bit Windows Installer (usually an .msi file).
+Run the installer and follow the prompts. Once finished, search for "PuTTY" in your Start menu to open it.
+
+2. Identify your FPGA's COM Port
+Before opening PuTTY, you need to know which "door" (COM port) your Nexys A7 is plugged into.
+Plug in your FPGA via the micro-USB cable used for programming.
+Right-click the Start button and select Device Manager.
+Expand the section labeled Ports (COM & LPT).
+Look for an entry like USB Serial Port (COMx) or Silicon Labs CP210x USB to UART Bridge (COMx).
+Note the number (e.g., COM3 or COM4).
+
+3. Configure PuTTY for your RISC-V SoC
+Now, tell PuTTY how to listen to the 1s and 0s coming from your processor.
+Connection Type: Select the radio button for Serial.
+Serial line: Delete COM1 and type the exact port you found in Device Manager (e.g., COM4).
+Speed: Type 115200. This must match the baud rate in your uart.v exactly, or you will see "garbage" characters.
+(Optional) Under Category (left side), go to Terminal and check "Implicit LF on every CR" if your text looks like it's stair-stepping across the screen.
+Go back to Session at the top. Type a name like "Nexys_A7_UART" in the "Saved Sessions" box and click Save so you don't have to type this every time.
+
+4. Open the Connection
+Click Open. A black terminal window will appear.
+If your FPGA is currently running the Echo script:
+Type a letter on your keyboard.
+The character travels to the FPGA, your RISC-V core processes it, and sends it back.
+If you see the letter appear in the window, your SoC is officially talking to the world!
+
+Troubleshooting Tips
+Blank Screen? If you type and see nothing, ensure your FPGA is programmed with the bitstream and the reset button has been toggled.
+Garbage Characters? (e.g., @) This usually means your clock or baud rate math is slightly off. Double-check that your uart.v is truly dividing the 100MHz clock down to 115200.
+Once you have this terminal open, are you ready to try sending your first "Hello World" string from the RISC-V assembly code?
+
+To inject your assembly program into the processor, you place it directly into the imem.hex file located in your workspace!
+
+Your RISC-V processor (instr_mem.v) has standard hardware logic that loads this file at boot-up:
+
+verilog
+initial begin
+    $readmemh("imem.hex", imem);
+end
+The FPGA and Simulator expects imem.hex to contain bare-metal machine code (one 32-bit hex instruction per line without the 0x). If you have a GCC toolchain on your computer, you would normally compile your code and extract it using riscv64-unknown-elf-objcopy -O verilog.
+
+The Exact Machine Code for the Echo Server
+If you just want to get your UART up and running right now without messing with the compiler toolchain, I've manually assembled the exact "WaitRX -> WaitTX -> Echo" assembly program into raw machine code for you!
+
+Just open your imem.hex file, delete what's inside, and paste these exact 10 lines:
+
+text
+800000b7
+0080a103
+00217113
+fe010ce3
+0040a183
+0080a103
+00117113
+fe011ce3
+0030a023
+fe1ff06f
+What these lines literally mean:
+800000b7: lui x1, 0x80000 (Setup UART base 0x8000_0000)
+0080a103: WaitRX: lw x2, 8(x1) (Load Status Register)
+00217113: andi x2, x2, 2 (Mask rx_ready bit)
+fe010ce3: beqz x2, WaitRX (Loop if 0)
+0040a183: lw x3, 4(x1) (Load RX character)
+0080a103: WaitTX: lw x2, 8(x1) (Load Status Register)
+00117113: andi x2, x2, 1 (Mask tx_busy bit)
+fe011ce3: bnez x2, WaitTX (Loop if 1)
+0030a023: sw x3, 0(x1) (Write/Echo character back out!)
+fe1ff06f: j WaitRX (Jump back up to instruction #2)
+Once you pasted this into imem.hex, re-run the synthesis on your Nexys A7 FPGA (since the .hex configuration acts as the FPGA's built-in starting ROM) and the program will spring to life! Let me know if PuTTY connects!
