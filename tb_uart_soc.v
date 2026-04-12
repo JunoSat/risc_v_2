@@ -32,7 +32,7 @@ module tb_uart_soc;
         // Since the CPU will fetch instructions from memory we just let the simulated clock run
         // for an extended period of time to allow the pipelined code to execute a loopback transfer.
         // It takes around ~8680 clocks to transfer one byte at 115200 Baud over 100MHz!
-        #500_000;
+        #10_000_000;
         
         $finish;
     end

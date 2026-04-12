@@ -14,7 +14,7 @@ module uart #(
     // TX Interface
     input  wire [7:0] tx_data,
     input  wire       tx_start,
-    output wire       tx_busy,
+    output wire       tx_full,
 
     // RX Interface
     output reg  [7:0] rx_data,
@@ -42,7 +42,24 @@ module uart #(
     reg [2:0]  tx_bit_idx;
     reg [7:0]  tx_shift_reg;
 
-    assign tx_busy = (tx_state != TX_IDLE);
+    // FIFO Interface Wires
+    wire [7:0] fifo_read_data;
+    wire       fifo_empty;
+    reg        fifo_read_en;
+
+    uart_tx_fifo #(
+        .DATA_WIDTH(8),
+        .DEPTH(1024)
+    ) tx_fifo (
+        .clk(clk),
+        .reset(reset),
+        .write_data(tx_data),
+        .write_en(tx_start),
+        .full(tx_full),
+        .read_data(fifo_read_data),
+        .read_en(fifo_read_en),
+        .empty(fifo_empty)
+    );
 
     always @(posedge clk or negedge reset) begin
         if (!reset) begin
@@ -51,14 +68,19 @@ module uart #(
             tx_bit_idx   <= 0;
             tx_shift_reg <= 0;
             tx           <= 1'b1;
+            fifo_read_en <= 1'b0;
         end else begin
+            // Default: do not read from FIFO unless we decide to this cycle
+            fifo_read_en <= 1'b0;
+            
             case (tx_state)
                 TX_IDLE: begin
                     tx <= 1'b1; // Drive line high when idle
                     tx_timer <= 0;
                     tx_bit_idx <= 0;
-                    if (tx_start) begin
-                        tx_shift_reg <= tx_data;
+                    if (!fifo_empty) begin
+                        tx_shift_reg <= fifo_read_data;
+                        fifo_read_en <= 1'b1; // Pop exactly one item
                         tx_state     <= TX_START;
                     end
                 end
