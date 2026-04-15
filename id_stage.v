@@ -7,6 +7,7 @@ module id_stage (
     output wire        immediate_sel,
     output wire        alu,
     output wire        lui,
+    output wire        auipc,
     output wire        jal,
     output wire        jalr,
     output wire        branch,
@@ -40,6 +41,7 @@ module id_stage (
     assign immediate_sel = (opcode == JALR) || (opcode == LOAD) || (opcode == ARITHI) || (opcode == SYSTEM);
     assign alu          = (opcode == ARITHI) || (opcode == ARITHR);
     assign lui          = (opcode == LUI);
+    assign auipc        = (opcode == AUIPC);
     assign jal          = (opcode == JAL);
     assign jalr         = (opcode == JALR);
     assign branch       = (opcode == BRANCH);
@@ -63,7 +65,7 @@ module id_stage (
             STORE:  immediate = {{20{instruction_i[31]}}, instruction_i[31:25], instruction_i[11:7]};
             ARITHI: immediate = (alu_op == SLL || alu_op == SR) ? {27'b0, instruction_i[24:20]} : {{20{instruction_i[31]}}, instruction_i[31:20]};
             ARITHR: immediate = 32'h0;
-            LUI:    immediate = {instruction_i[31:12], 12'b0};
+            LUI, AUIPC: immediate = {instruction_i[31:12], 12'b0};
             JAL:    immediate = {{12{instruction_i[31]}}, instruction_i[19:12], instruction_i[20], instruction_i[30:21], 1'b0};
             SYSTEM: immediate = {27'b0, instruction_i[19:15]}; // zimm for CSRR*I
             default: illegal_inst = 1'b1;

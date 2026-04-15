@@ -21,6 +21,7 @@ module id_ex_reg (
     input  wire        immediate_sel_i,
     input  wire        alu_i,
     input  wire        lui_i,
+    input  wire        auipc_i,
     input  wire        jal_i,
     input  wire        jalr_i,
     input  wire        branch_i,
@@ -48,6 +49,7 @@ module id_ex_reg (
     output reg         immediate_sel_o,
     output reg         alu_o,
     output reg         lui_o,
+    output reg         auipc_o,
     output reg         jal_o,
     output reg         jalr_o,
     output reg         branch_o,
@@ -76,6 +78,7 @@ module id_ex_reg (
             immediate_sel_o <= 1'b0;
             alu_o           <= 1'b0;
             lui_o           <= 1'b0;
+            auipc_o         <= 1'b0;
             jal_o           <= 1'b0;
             jalr_o          <= 1'b0;
             branch_o        <= 1'b0;
@@ -102,6 +105,7 @@ module id_ex_reg (
             immediate_sel_o <= 1'b0;
             alu_o           <= 1'b0;
             lui_o           <= 1'b0;
+            auipc_o         <= 1'b0;
             jal_o           <= 1'b0;
             jalr_o          <= 1'b0;
             branch_o        <= 1'b0;
@@ -128,6 +132,7 @@ module id_ex_reg (
             immediate_sel_o <= immediate_sel_i;
             alu_o           <= alu_i;
             lui_o           <= lui_i;
+            auipc_o         <= auipc_i;
             jal_o           <= jal_i;
             jalr_o          <= jalr_i;
             branch_o        <= branch_i;

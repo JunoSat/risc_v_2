@@ -1,0 +1,237 @@
+
+program.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	00001137          	lui	sp,0x1
+   4:	008000ef          	jal	c <main>
+
+00000008 <halt>:
+   8:	0000006f          	j	8 <halt>
+
+0000000c <main>:
+   c:	ff010113          	addi	sp,sp,-16 # ff0 <run_alu_diagnostic+0xe80>
+  10:	00000517          	auipc	a0,0x0
+  14:	18850513          	addi	a0,a0,392 # 198 <run_alu_diagnostic+0x28>
+  18:	00112623          	sw	ra,12(sp)
+  1c:	05c000ef          	jal	78 <print_string>
+  20:	00000517          	auipc	a0,0x0
+  24:	1a450513          	addi	a0,a0,420 # 1c4 <run_alu_diagnostic+0x54>
+  28:	050000ef          	jal	78 <print_string>
+  2c:	00000517          	auipc	a0,0x0
+  30:	1c450513          	addi	a0,a0,452 # 1f0 <run_alu_diagnostic+0x80>
+  34:	044000ef          	jal	78 <print_string>
+  38:	138000ef          	jal	170 <run_alu_diagnostic>
+  3c:	00000517          	auipc	a0,0x0
+  40:	1e050513          	addi	a0,a0,480 # 21c <run_alu_diagnostic+0xac>
+  44:	034000ef          	jal	78 <print_string>
+  48:	00c12083          	lw	ra,12(sp)
+  4c:	00000513          	li	a0,0
+  50:	01010113          	addi	sp,sp,16
+  54:	00008067          	ret
+
+00000058 <print_char>:
+  58:	80000737          	lui	a4,0x80000
+  5c:	00870713          	addi	a4,a4,8 # 80000008 <run_alu_diagnostic+0x7ffffe98>
+  60:	800006b7          	lui	a3,0x80000
+  64:	00072783          	lw	a5,0(a4)
+  68:	0017f793          	andi	a5,a5,1
+  6c:	fe079ce3          	bnez	a5,64 <print_char+0xc>
+  70:	00a6a023          	sw	a0,0(a3) # 80000000 <run_alu_diagnostic+0x7ffffe90>
+  74:	00008067          	ret
+
+00000078 <print_string>:
+  78:	00054683          	lbu	a3,0(a0)
+  7c:	02068663          	beqz	a3,a8 <print_string+0x30>
+  80:	80000737          	lui	a4,0x80000
+  84:	00870713          	addi	a4,a4,8 # 80000008 <run_alu_diagnostic+0x7ffffe98>
+  88:	80000637          	lui	a2,0x80000
+  8c:	00150513          	addi	a0,a0,1
+  90:	00072783          	lw	a5,0(a4)
+  94:	0017f793          	andi	a5,a5,1
+  98:	fe079ce3          	bnez	a5,90 <print_string+0x18>
+  9c:	00d62023          	sw	a3,0(a2) # 80000000 <run_alu_diagnostic+0x7ffffe90>
+  a0:	00054683          	lbu	a3,0(a0)
+  a4:	fe0694e3          	bnez	a3,8c <print_string+0x14>
+  a8:	00008067          	ret
+
+000000ac <print_int>:
+  ac:	02054663          	bltz	a0,d8 <print_int+0x2c>
+  b0:	04051663          	bnez	a0,fc <print_int+0x50>
+  b4:	80000737          	lui	a4,0x80000
+  b8:	00870713          	addi	a4,a4,8 # 80000008 <run_alu_diagnostic+0x7ffffe98>
+  bc:	800006b7          	lui	a3,0x80000
+  c0:	00072783          	lw	a5,0(a4)
+  c4:	0017f793          	andi	a5,a5,1
+  c8:	fe079ce3          	bnez	a5,c0 <print_int+0x14>
+  cc:	03000793          	li	a5,48
+  d0:	00f6a023          	sw	a5,0(a3) # 80000000 <run_alu_diagnostic+0x7ffffe90>
+  d4:	00008067          	ret
+  d8:	80000737          	lui	a4,0x80000
+  dc:	00870713          	addi	a4,a4,8 # 80000008 <run_alu_diagnostic+0x7ffffe98>
+  e0:	800006b7          	lui	a3,0x80000
+  e4:	00072783          	lw	a5,0(a4)
+  e8:	0017f793          	andi	a5,a5,1
+  ec:	fe079ce3          	bnez	a5,e4 <print_int+0x38>
+  f0:	02d00793          	li	a5,45
+  f4:	40a00533          	neg	a0,a0
+  f8:	00f6a023          	sw	a5,0(a3) # 80000000 <run_alu_diagnostic+0x7ffffe90>
+  fc:	ff010113          	addi	sp,sp,-16
+ 100:	ccccd837          	lui	a6,0xccccd
+ 104:	ccd80813          	addi	a6,a6,-819 # cccccccd <run_alu_diagnostic+0xcccccb5d>
+ 108:	00000613          	li	a2,0
+ 10c:	00010593          	mv	a1,sp
+ 110:	030537b3          	mulhu	a5,a0,a6
+ 114:	00160613          	addi	a2,a2,1
+ 118:	00c586b3          	add	a3,a1,a2
+ 11c:	0037d793          	srli	a5,a5,0x3
+ 120:	00279713          	slli	a4,a5,0x2
+ 124:	00f70733          	add	a4,a4,a5
+ 128:	00171713          	slli	a4,a4,0x1
+ 12c:	40e50533          	sub	a0,a0,a4
+ 130:	03050713          	addi	a4,a0,48
+ 134:	fee68fa3          	sb	a4,-1(a3)
+ 138:	00078513          	mv	a0,a5
+ 13c:	fc079ae3          	bnez	a5,110 <print_int+0x64>
+ 140:	80000737          	lui	a4,0x80000
+ 144:	00870713          	addi	a4,a4,8 # 80000008 <run_alu_diagnostic+0x7ffffe98>
+ 148:	80000537          	lui	a0,0x80000
+ 14c:	fff6c603          	lbu	a2,-1(a3)
+ 150:	00072783          	lw	a5,0(a4)
+ 154:	0017f793          	andi	a5,a5,1
+ 158:	fe079ce3          	bnez	a5,150 <print_int+0xa4>
+ 15c:	00c52023          	sw	a2,0(a0) # 80000000 <run_alu_diagnostic+0x7ffffe90>
+ 160:	fff68693          	addi	a3,a3,-1
+ 164:	fed594e3          	bne	a1,a3,14c <print_int+0xa0>
+ 168:	01010113          	addi	sp,sp,16
+ 16c:	00008067          	ret
+
+00000170 <run_alu_diagnostic>:
+ 170:	ff010113          	addi	sp,sp,-16
+ 174:	00000517          	auipc	a0,0x0
+ 178:	0cc50513          	addi	a0,a0,204 # 240 <run_alu_diagnostic+0xd0>
+ 17c:	00112623          	sw	ra,12(sp)
+ 180:	ef9ff0ef          	jal	78 <print_string>
+ 184:	00c12083          	lw	ra,12(sp)
+ 188:	00000517          	auipc	a0,0x0
+ 18c:	0e450513          	addi	a0,a0,228 # 26c <run_alu_diagnostic+0xfc>
+ 190:	01010113          	addi	sp,sp,16
+ 194:	ee5ff06f          	j	78 <print_string>
+ 198:	0a0d                	.insn	2, 0x0a0d
+ 19a:	3d3d                	.insn	2, 0x3d3d
+ 19c:	3d3d                	.insn	2, 0x3d3d
+ 19e:	3d3d                	.insn	2, 0x3d3d
+ 1a0:	3d3d                	.insn	2, 0x3d3d
+ 1a2:	3d3d                	.insn	2, 0x3d3d
+ 1a4:	3d3d                	.insn	2, 0x3d3d
+ 1a6:	3d3d                	.insn	2, 0x3d3d
+ 1a8:	3d3d                	.insn	2, 0x3d3d
+ 1aa:	3d3d                	.insn	2, 0x3d3d
+ 1ac:	3d3d                	.insn	2, 0x3d3d
+ 1ae:	3d3d                	.insn	2, 0x3d3d
+ 1b0:	3d3d                	.insn	2, 0x3d3d
+ 1b2:	3d3d                	.insn	2, 0x3d3d
+ 1b4:	3d3d                	.insn	2, 0x3d3d
+ 1b6:	3d3d                	.insn	2, 0x3d3d
+ 1b8:	3d3d                	.insn	2, 0x3d3d
+ 1ba:	3d3d                	.insn	2, 0x3d3d
+ 1bc:	3d3d                	.insn	2, 0x3d3d
+ 1be:	3d3d                	.insn	2, 0x3d3d
+ 1c0:	0a0d                	.insn	2, 0x0a0d
+ 1c2:	0000                	.insn	2, 0x0000
+ 1c4:	2020                	.insn	2, 0x2020
+ 1c6:	5220                	.insn	2, 0x5220
+ 1c8:	5349                	.insn	2, 0x5349
+ 1ca:	20562d43          	.insn	4, 0x20562d43
+ 1ce:	20434f53          	.insn	4, 0x20434f53
+ 1d2:	4e49                	.insn	2, 0x4e49
+ 1d4:	4554                	.insn	2, 0x4554
+ 1d6:	4152                	.insn	2, 0x4152
+ 1d8:	56495443          	.insn	4, 0x56495443
+ 1dc:	2045                	.insn	2, 0x2045
+ 1de:	4544                	.insn	2, 0x4544
+ 1e0:	4f4d                	.insn	2, 0x4f4d
+ 1e2:	2820                	.insn	2, 0x2820
+ 1e4:	4f42                	.insn	2, 0x4f42
+ 1e6:	2029544f          	.insn	4, 0x2029544f
+ 1ea:	0a0d                	.insn	2, 0x0a0d
+ 1ec:	0000                	.insn	2, 0x0000
+ 1ee:	0000                	.insn	2, 0x0000
+ 1f0:	3d3d                	.insn	2, 0x3d3d
+ 1f2:	3d3d                	.insn	2, 0x3d3d
+ 1f4:	3d3d                	.insn	2, 0x3d3d
+ 1f6:	3d3d                	.insn	2, 0x3d3d
+ 1f8:	3d3d                	.insn	2, 0x3d3d
+ 1fa:	3d3d                	.insn	2, 0x3d3d
+ 1fc:	3d3d                	.insn	2, 0x3d3d
+ 1fe:	3d3d                	.insn	2, 0x3d3d
+ 200:	3d3d                	.insn	2, 0x3d3d
+ 202:	3d3d                	.insn	2, 0x3d3d
+ 204:	3d3d                	.insn	2, 0x3d3d
+ 206:	3d3d                	.insn	2, 0x3d3d
+ 208:	3d3d                	.insn	2, 0x3d3d
+ 20a:	3d3d                	.insn	2, 0x3d3d
+ 20c:	3d3d                	.insn	2, 0x3d3d
+ 20e:	3d3d                	.insn	2, 0x3d3d
+ 210:	3d3d                	.insn	2, 0x3d3d
+ 212:	3d3d                	.insn	2, 0x3d3d
+ 214:	3d3d                	.insn	2, 0x3d3d
+ 216:	0a0d                	.insn	2, 0x0a0d
+ 218:	0000                	.insn	2, 0x0000
+ 21a:	0000                	.insn	2, 0x0000
+ 21c:	0a0d                	.insn	2, 0x0a0d
+ 21e:	6b726f57          	.insn	4, 0x6b726f57
+ 222:	6f6c                	.insn	2, 0x6f6c
+ 224:	6461                	.insn	2, 0x6461
+ 226:	6320                	.insn	2, 0x6320
+ 228:	6c706d6f          	jal	s10,70ee <run_alu_diagnostic+0x6f7e>
+ 22c:	7465                	.insn	2, 0x7465
+ 22e:	2e65                	.insn	2, 0x2e65
+ 230:	4320                	.insn	2, 0x4320
+ 232:	5550                	.insn	2, 0x5550
+ 234:	6820                	.insn	2, 0x6820
+ 236:	6c61                	.insn	2, 0x6c61
+ 238:	6974                	.insn	2, 0x6974
+ 23a:	676e                	.insn	2, 0x676e
+ 23c:	0d2e                	.insn	2, 0x0d2e
+ 23e:	000a                	.insn	2, 0x000a
+ 240:	0a0d                	.insn	2, 0x0a0d
+ 242:	2d2d                	.insn	2, 0x2d2d
+ 244:	202d                	.insn	2, 0x202d
+ 246:	52415453          	.insn	4, 0x52415453
+ 24a:	4954                	.insn	2, 0x4954
+ 24c:	474e                	.insn	2, 0x474e
+ 24e:	4120                	.insn	2, 0x4120
+ 250:	554c                	.insn	2, 0x554c
+ 252:	2620                	.insn	2, 0x2620
+ 254:	5220                	.insn	2, 0x5220
+ 256:	3356                	.insn	2, 0x3356
+ 258:	4d32                	.insn	2, 0x4d32
+ 25a:	4420                	.insn	2, 0x4420
+ 25c:	4149                	.insn	2, 0x4149
+ 25e:	534f4e47          	.insn	4, 0x534f4e47
+ 262:	4954                	.insn	2, 0x4954
+ 264:	2d2d2043          	.insn	4, 0x2d2d2043
+ 268:	0d2d                	.insn	2, 0x0d2d
+ 26a:	000a                	.insn	2, 0x000a
+ 26c:	4552                	.insn	2, 0x4552
+ 26e:	544c5553          	.insn	4, 0x544c5553
+ 272:	203a                	.insn	2, 0x203a
+ 274:	5341505b          	.insn	4, 0x5341505b
+ 278:	5d444553          	.insn	4, 0x5d444553
+ 27c:	3120                	.insn	2, 0x3120
+ 27e:	2f35                	.insn	2, 0x2f35
+ 280:	3531                	.insn	2, 0x3531
+ 282:	4120                	.insn	2, 0x4120
+ 284:	554c                	.insn	2, 0x554c
+ 286:	4520                	.insn	2, 0x4520
+ 288:	6764                	.insn	2, 0x6764
+ 28a:	2065                	.insn	2, 0x2065
+ 28c:	65736143          	.insn	4, 0x65736143
+ 290:	75532073          	.insn	4, 0x75532073
+ 294:	73656363          	bltu	a0,s6,9ba <run_alu_diagnostic+0x84a>
+ 298:	6c756673          	.insn	4, 0x6c756673
+ 29c:	0d21                	.insn	2, 0x0d21
+ 29e:	000a                	.insn	2, 0x000a

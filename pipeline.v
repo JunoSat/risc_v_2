@@ -75,6 +75,7 @@ module pipe #(
     wire        id_immediate_sel;
     wire        id_alu;
     wire        id_lui;
+    wire        id_auipc;
     wire        id_jal;
     wire        id_jalr;
     wire        id_branch;
@@ -103,6 +104,7 @@ module pipe #(
     wire        ex_immediate_sel;
     wire        ex_alu;
     wire        ex_lui;
+    wire        ex_auipc;
     wire        ex_jal;
     wire        ex_jalr;
     wire        ex_branch;
@@ -240,6 +242,7 @@ module pipe #(
         .immediate_sel (id_immediate_sel),
         .alu           (id_alu),
         .lui           (id_lui),
+        .auipc         (id_auipc),
         .jal           (id_jal),
         .jalr          (id_jalr),
         .branch        (id_branch),
@@ -275,6 +278,7 @@ module pipe #(
         .immediate_sel_i (id_immediate_sel),
         .alu_i           (id_alu),
         .lui_i           (id_lui),
+        .auipc_i         (id_auipc),
         .jal_i           (id_jal),
         .jalr_i          (id_jalr),
         .branch_i        (id_branch),
@@ -300,6 +304,7 @@ module pipe #(
         .immediate_sel_o (ex_immediate_sel),
         .alu_o           (ex_alu),
         .lui_o           (ex_lui),
+        .auipc_o         (ex_auipc),
         .jal_o           (ex_jal),
         .jalr_o          (ex_jalr),
         .branch_o        (ex_branch),
@@ -326,6 +331,7 @@ module pipe #(
         .immediate_sel_i    (ex_immediate_sel),
         .alu_i              (ex_alu),
         .lui_i              (ex_lui),
+        .auipc_i            (ex_auipc),
         .jal_i              (ex_jal),
         .jalr_i             (ex_jalr),
         .branch_i           (ex_branch),
@@ -352,7 +358,7 @@ module pipe #(
         .csr_wdata          (ex_csr_wdata)
     );
 
-    wire ex_alu_to_reg = (ex_alu | ex_lui | ex_jal | ex_jalr | ex_mem_to_reg | ex_is_csr | ex_mult_div_en);
+    wire ex_alu_to_reg = (ex_alu | ex_lui | ex_auipc | ex_jal | ex_jalr | ex_mem_to_reg | ex_is_csr | ex_mult_div_en);
 
     ex_mem_reg u_ex_mem_reg (
         .clk            (clk),

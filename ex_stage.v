@@ -13,6 +13,7 @@ module ex_stage (
     input  wire        immediate_sel_i,
     input  wire        alu_i,
     input  wire        lui_i,
+    input  wire        auipc_i,
     input  wire        jal_i,
     input  wire        jalr_i,
     input  wire        branch_i,
@@ -171,6 +172,9 @@ module ex_stage (
         end
         else if (lui_i) begin
             ex_result = immediate_i;
+        end
+        else if (auipc_i) begin
+            ex_result = pc_i + immediate_i;
         end
         else if (is_csr_i) begin
             ex_result = csr_rdata_i; // Output old CSR value to rd

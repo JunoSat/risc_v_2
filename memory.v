@@ -56,7 +56,7 @@ module data_mem (
 	// Simulation / FPGA init
 	// TODO-DMEM-2: Initialize data memory from dmem.hex file
 	initial begin
-    	$readmemh("dmem.hex", dmem);
+    	$readmemh("C:/Users/Ruchi/HWLabProject/sat/risc_v_2/dmem.hex", dmem);
 	end
 
 	// -------------------------
