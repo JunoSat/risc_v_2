@@ -53,11 +53,23 @@ module top_fpga #(
     // Read registers (0x8000_0004 = RX Data fetch)
     wire uart_rx_ack = uart_re && (dmem_read_address[7:0] == 8'h04);
     
-    // Read Multiplexer (Routes UART Status/Data back to Pipeline safely, otherwise maps BRAM)
-    assign dmem_read_data_pipe = (dmem_read_address[31:28] == 4'h8) ? 
-                                 ((dmem_read_address[7:0] == 8'h08) ? {30'b0, uart_rx_ready, uart_tx_full} : 
-                                  (dmem_read_address[7:0] == 8'h04) ? {24'b0, uart_rx_data} : 32'h0) 
-                                 : dmem_read_data_bram;
+    // Read Multiplexer (Synchronized to exactly match BRAM's 1-cycle latency)
+    reg [31:0] uart_read_data_r;
+    reg        is_uart_read_r;
+    
+    always @(posedge clk) begin
+        // Carry the UART-read state into the Write-Back stage cycle
+        is_uart_read_r <= uart_re;
+        
+        // Sample the UART Hardware wires dynamically exactly when a Read is requested
+        if (uart_re) begin
+            uart_read_data_r <= (dmem_read_address[7:0] == 8'h08) ? {30'b0, uart_rx_ready, uart_tx_full} : 
+                                (dmem_read_address[7:0] == 8'h04) ? {24'b0, uart_rx_data} : 32'h0;
+        end
+    end
+    
+    // During the pipeline WB stage, output either the safely latched UART data, or native BRAM data.
+    assign dmem_read_data_pipe = is_uart_read_r ? uart_read_data_r : dmem_read_data_bram;
 
     // LED mappings! Top 8 bits = Most recently received character. Bottom 8 bits = Current PC.
     reg [7:0] led_upper;

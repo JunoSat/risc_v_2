@@ -9,7 +9,7 @@ void run_addition() {
     print_string("Equation: 100 + 2\r\n");
     print_string("Result: ");
     print_int(c);
-    print_string("\r\n");
+    print_string("\r\nExpected: 102\r\n");
 }
 
 void run_negative() {
@@ -20,7 +20,7 @@ void run_negative() {
     print_string("Equation: 4 - 50\r\n");
     print_string("Result: ");
     print_int(c);
-    print_string("\r\n");
+    print_string("\r\nExpected: -46\r\n");
 }
 
 void run_sorting() {
@@ -48,6 +48,7 @@ void run_sorting() {
     print_int(arr[0]); print_string(", ");
     print_int(arr[1]); print_string(", ");
     print_int(arr[2]); print_string("\r\n");
+    print_string("Expected: 3, 6, 9\r\n");
 }
 
 void run_fibonacci() {
@@ -62,7 +63,7 @@ void run_fibonacci() {
         t1 = t2;
         t2 = nextTerm;
     }
-    print_string("\r\n");
+    print_string("\r\nExpected: 0, 1, 1, 2, 3\r\n");
 }
 
 void run_xor() {
@@ -73,63 +74,28 @@ void run_xor() {
     print_string("Equation: 170 ^ 85\r\n");
     print_string("Result: ");
     print_int(c);
-    print_string("\r\n");
+    print_string("\r\nExpected: 255\r\n");
 }
 
 int main() {
-    // -----------------------------------------------------
-    // IMPORTANT: Wait for user to interact via PuTTY.
-    // This prevents the CPU from running everything instantly
-    // before the user opens the terminal!
-    // -----------------------------------------------------
     print_string("\r\n\r\n============================================\r\n");
-    print_string("   RISC-V SOC INTERACTIVE DEMO TERMINAL\r\n");
+    print_string("   RISC-V SOC AUTOMATED DIAGNOSTIC RUN\r\n");
     print_string("============================================\r\n");
-    print_string("Press 's' on your keyboard to start demo...\r\n");
+    print_string("Execution Started!\r\n");
     
-    char start_key = 0;
-    while (start_key != 's') {
-        start_key = get_char();
-    }
+    // Linearly execute all workloads, exactly like the Assembly test did
+    run_addition();
+    run_negative();
+    run_sorting();
+    run_fibonacci();
+    run_xor();
     
-    print_string("\r\nSystem Initialized!\r\n");
+    // Full ALU 15-edge-case test
+    run_alu_diagnostic();
     
-    // Interactive Loop
-    while(1) {
-        print_string("\r\nSelect a workload to execute:\r\n");
-        print_string("1: Addition\r\n");
-        print_string("2: Subtraction (Negative)\r\n");
-        print_string("3: Sorting\r\n");
-        print_string("4: Fibonacci\r\n");
-        print_string("5: XOR\r\n");
-        print_string("6: Full ALU Diagnostic TestSuite\r\n");
-        print_string("Selection > ");
-        
-        char sel = get_char();
-        print_char(sel); // Echo what they typed back to them
-        print_string("\r\n");
-        
-        if (sel == '1') {
-            run_addition();
-        } 
-        else if (sel == '2') {
-            run_negative();
-        } 
-        else if (sel == '3') {
-            run_sorting();
-        } 
-        else if (sel == '4') {
-            run_fibonacci();
-        } 
-        else if (sel == '5') {
-            run_xor();
-        }
-        else if (sel == '6') {
-            run_alu_diagnostic();
-        }
-        else {
-            print_string("Invalid selection. Try 1-6.\r\n");
-        }
-    }
-    return 0;
+    print_string("\r\n============================================\r\n");
+    print_string("              TEST SUITE COMPLETE\r\n");
+    print_string("============================================\r\n");
+    
+    return 0; // Goes back to start.S and halts
 }
