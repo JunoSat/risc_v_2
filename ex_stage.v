@@ -46,6 +46,7 @@ module ex_stage (
     output reg         branch_taken,
     output reg  [31:0] branch_target,
     output wire        stall_ex_request, // Stalls earlier stages because Math takes longer
+    output wire        ex_exception,     // Triggered on traps like div-by-zero
     
     // CSR Outputs
     output reg         csr_we,
@@ -105,6 +106,7 @@ module ex_stage (
     wire [31:0] mult_div_result_val;
     wire        mult_div_ready;
     wire        mult_div_busy;
+    wire        mult_div_zero_fault;
     
     // Fire the module immediately when entering EX with mult_div op, unless it's already busy
     wire        mult_div_start = mult_div_en_i && !mult_div_busy && !mult_div_ready;
@@ -118,7 +120,8 @@ module ex_stage (
         .op       (alu_op_i),
         .result   (mult_div_result_val),
         .ready    (mult_div_ready),
-        .busy     (mult_div_busy)
+        .busy     (mult_div_busy),
+        .div_zero_fault (mult_div_zero_fault)
     );
 
     // ----------------------------------------------------
@@ -126,17 +129,22 @@ module ex_stage (
     // ----------------------------------------------------
     wire [31:0] fpu_result_val;
     wire        stall_fpu;
+    wire        fpu_zero_fault;
     
     fpu u_fpu (
-        .clk        (clk),
-        .reset      (reset),
-        .a          (fp_fw_operand1),
-        .b          (fp_fw_operand2),
-        .funct5     (fp_funct5_i),
-        .fp_en      (fp_en_i),
-        .result     (fpu_result_val),
-        .stall_fpu  (stall_fpu)
+        .clk            (clk),
+        .reset          (reset),
+        .a              (fp_fw_operand1),
+        .b              (fp_fw_operand2),
+        .funct5         (fp_funct5_i),
+        .fp_en          (fp_en_i),
+        .result         (fpu_result_val),
+        .stall_fpu      (stall_fpu),
+        .fpu_exception  (fpu_zero_fault)
     );
+
+    // Combine trap sources, mapped tightly to the active math execute enable flag
+    assign ex_exception = (mult_div_en_i & mult_div_zero_fault) | (fp_en_i & fpu_zero_fault);
 
     // Hazard Unit freezes pipeline if we need to wait
     assign stall_ex_request = (mult_div_en_i && !mult_div_ready) || stall_fpu;

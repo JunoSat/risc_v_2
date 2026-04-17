@@ -10,7 +10,8 @@ module fpu_div(
     input wire [31:0] b,
     
     output reg [31:0] result,
-    output reg done
+    output reg done,
+    output reg div_zero_fault
 );
 
     localparam IDLE=0, DIVIDE=1, NORMALIZE=2, PACK=3;
@@ -33,6 +34,7 @@ module fpu_div(
             state <= IDLE;
             done <= 0;
             result <= 0;
+            div_zero_fault <= 0;
             sign_res <= 0;
             exp_res <= 0;
             accumulator <= 0;
@@ -42,8 +44,10 @@ module fpu_div(
             case(state)
                 IDLE: begin
                     done <= 0;
+                    div_zero_fault <= 0;
                     if (start) begin
                         if (b[30:0] == 0) begin // divide by zero
+                            div_zero_fault <= 1;
                             result <= {a[31] ^ b[31], 8'hFF, 23'b0};
                             done <= 1;
                         end else if (a[30:0] == 0) begin // zero dividend

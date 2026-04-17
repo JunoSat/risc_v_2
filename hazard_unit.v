@@ -21,6 +21,9 @@ module hazard_unit (
     // RV32M long cycle processing Request
     input  wire       stall_ex_request,
     
+    // Exception CSR triggers
+    input  wire       exception_trigger,
+    
     // Forwarding outputs
     output reg  [1:0] forward_a,
     output reg  [1:0] forward_b,
@@ -93,6 +96,16 @@ module hazard_unit (
             // Unstall them so they flush instead of locking UP
             stall_if = 1'b0;
             stall_id = 1'b0;
+        end
+        // --- Exception Trapping Logic ---
+        // Exceptions must flush all inflight instructions so we jump to handler uncorrupted
+        if (exception_trigger) begin
+            flush_if = 1'b1;
+            flush_id = 1'b1;
+            flush_ex = 1'b1;
+            stall_if = 1'b0;
+            stall_id = 1'b0;
+            stall_ex = 1'b0;
         end
     end
 

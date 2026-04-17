@@ -5,6 +5,10 @@ _start:
     # Initialize Stack Pointer to the absolute top of 8KB DMEM (0x2000)
     li sp, 0x2000
     
+    # Initialize Trap Vector (exceptions will jump to _trap_handler)
+    la t0, _trap_handler
+    csrw mtvec, t0
+    
     # ---------------------------------------------------------
     # TEST: Floating Point Test (RV32F)
     # ---------------------------------------------------------
@@ -29,3 +33,7 @@ _start:
 
 halt:
     j halt
+
+_trap_handler:
+    jal ra, c_trap_handler
+    j _start

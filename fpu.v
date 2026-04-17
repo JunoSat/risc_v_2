@@ -10,19 +10,22 @@ module fpu(
     input wire fp_en,         // 1 if the instruction is an OP-FP instruction
     
     output wire [31:0] result,
-    output wire stall_fpu     // Active HIGH to stall the pipeline
+    output wire stall_fpu,    // Active HIGH to stall the pipeline
+    output wire fpu_exception // Active HIGH for hardware exceptions (Zero division)
 );
     
     `include "opcode.vh"
     
     wire add_done, mult_done, div_done, sqrt_done;
     wire [31:0] add_res, mult_res, div_res, sqrt_res;
+    wire fpu_div_zero;
     
     reg start_add, start_mult, start_div, start_sqrt, is_sub;
     
     // Tracks if the FPU is currently performing a multi-cycle computation
     reg computing;
     reg [31:0] saved_result;
+    reg saved_exception;
     
     reg [31:0] locked_a;
     reg [31:0] locked_b;
@@ -36,6 +39,7 @@ module fpu(
             start_sqrt <= 0;
             is_sub <= 0;
             saved_result <= 0;
+            saved_exception <= 0;
             locked_a <= 0;
             locked_b <= 0;
         end else begin
@@ -71,15 +75,19 @@ module fpu(
             if (computing) begin
                 if (add_done) begin
                     saved_result <= add_res;
+                    saved_exception <= 0;
                     computing <= 0;
                 end else if (mult_done) begin
                     saved_result <= mult_res;
+                    saved_exception <= 0;
                     computing <= 0;
                 end else if (div_done) begin
                     saved_result <= div_res;
+                    saved_exception <= fpu_div_zero;
                     computing <= 0;
                 end else if (sqrt_done) begin
                     saved_result <= sqrt_res;
+                    saved_exception <= 0;
                     computing <= 0;
                 end
             end
@@ -91,6 +99,8 @@ module fpu(
                     (computing && mult_done) ? mult_res :
                     (computing && div_done) ? div_res :
                     (computing && sqrt_done) ? sqrt_res : saved_result;
+                    
+    assign fpu_exception = (computing && div_done) ? fpu_div_zero : saved_exception;
     
     // stall_fpu logic: 
     // Stall the pipeline when an FP math operation is encountered (fp_en is high and funct5 matches) 
@@ -126,7 +136,8 @@ module fpu(
         .a(locked_a),
         .b(locked_b),
         .result(div_res),
-        .done(div_done)
+        .done(div_done),
+        .div_zero_fault(fpu_div_zero)
     );
     
     fpu_sqrt u_sqrt (

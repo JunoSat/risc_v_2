@@ -156,7 +156,12 @@ module pipe #(
 
     wire        wb_fp_reg_write;
 
-    assign exception = wb_result === 32'hx && ex_illegal_inst; // Optional assignment
+    // Trap & Exception Logic
+    wire        ex_exception;
+    wire [31:0] exception_vector;
+    
+    // Unused optional signal
+    assign exception = wb_result === 32'hx && ex_illegal_inst;
 
     // ----------------------------------------------------
     // Internal RegFile Forwarding (Read in ID)
@@ -221,6 +226,7 @@ module pipe #(
         
         .branch_taken     (branch_taken),
         .stall_ex_request (stall_ex_request),
+        .exception_trigger(ex_exception),
         
         .stall_if         (stall_if_haz),
         .stall_id         (stall_id_haz),
@@ -247,10 +253,11 @@ module pipe #(
         .csr_waddr        (wb_csr_addr),
         .csr_wdata        (wb_csr_wdata),
         
-        .exception_trigger(1'b0),
-        .exception_cause  (32'b0),
-        .exception_pc     (32'b0),
-        .exception_vector ()
+        // Trap logic uses pc from EX stage where fault evaluates
+        .exception_trigger(ex_exception),
+        .exception_cause  (ex_exception ? 32'd2 : 32'b0), // Ex: hardware specific fault code
+        .exception_pc     (ex_pc),
+        .exception_vector (exception_vector)
     );
 
     if_stage #( .RESET_PC(RESET) ) u_if_stage (
@@ -259,6 +266,8 @@ module pipe #(
         .stall            (stage_stall_if),
         .branch_taken     (branch_taken),
         .branch_target    (branch_target),
+        .exception_trigger(ex_exception),
+        .exception_vector (exception_vector),
         .inst_mem_address (inst_mem_address),
         .inst_mem_is_ready(inst_mem_is_ready),
         .pc_o             (if_pc_out)
@@ -415,6 +424,7 @@ module pipe #(
         .branch_target      (branch_target),
         
         .stall_ex_request   (stall_ex_request),
+        .ex_exception       (ex_exception),
         .csr_we             (ex_csr_we),
         .csr_wdata          (ex_csr_wdata)
     );

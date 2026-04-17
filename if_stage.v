@@ -11,6 +11,10 @@ module if_stage #(
     input  wire        branch_taken,
     input  wire [31:0] branch_target,
     
+    // Exception Hooks from CSR
+    input  wire        exception_trigger,
+    input  wire [31:0] exception_vector,
+    
     // Outputs to instruction memory
     output wire [31:0] inst_mem_address,
     output wire        inst_mem_is_ready,
@@ -30,7 +34,10 @@ module if_stage #(
             pc_reg <= RESET_PC;
         end
         else if (!stall) begin
-            if (branch_taken) begin
+            if (exception_trigger) begin
+                pc_reg <= exception_vector;
+            end
+            else if (branch_taken) begin
                 pc_reg <= branch_target;
             end
             else begin

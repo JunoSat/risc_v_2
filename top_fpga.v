@@ -2,7 +2,8 @@
 
 module top_fpga #(
 	parameter IMEMSIZE = 8192,
-	parameter DMEMSIZE = 8192
+	parameter DMEMSIZE = 8192,
+	parameter BAUD_RATE = 115200
 )(
 	input  wire clk,    	// fast board clock (e.g. 100 MHz)
 	input  wire reset,  	// active-low reset
@@ -13,6 +14,21 @@ module top_fpga #(
 
 	wire [31:0] current_pc;
 	wire exception;
+
+    // --- CLOCK DIVIDER TO 50MHz ---
+    // Safely resolves the -1.765ns Setup Timing Violation on the long 
+    // Is_uart_read_r -> mem_read_data -> FW -> EX -> Branch -> Flush -> Pipeline_CE path.
+    reg clk_50 = 0;
+    always @(posedge clk or negedge reset) begin
+        if (!reset) clk_50 <= 1'b0;
+        else clk_50 <= ~clk_50;
+    end
+    
+    wire cpu_clk;
+    BUFG bufg_inst (
+        .I(clk_50),
+        .O(cpu_clk)
+    );
 
 	////////////////////////////////////////////////////////////
 	// PIPE ↔ MEMORY WIRES
@@ -51,13 +67,13 @@ module top_fpga #(
     wire uart_tx_start = uart_we && (dmem_write_address[7:0] == 8'h00);
     
     // Read registers (0x8000_0004 = RX Data fetch)
-    wire uart_rx_ack = uart_re && (dmem_read_address[7:0] == 8'h04);
+    wire uart_rx_ack = (!cpu_reset) ? uart_rx_ready : (uart_re && (dmem_read_address[7:0] == 8'h04));
     
     // Read Multiplexer (Synchronized to exactly match BRAM's 1-cycle latency)
     reg [31:0] uart_read_data_r;
     reg        is_uart_read_r;
     
-    always @(posedge clk) begin
+    always @(posedge cpu_clk) begin
         // Carry the UART-read state into the Write-Back stage cycle
         is_uart_read_r <= uart_re;
         
@@ -83,10 +99,10 @@ module top_fpga #(
 	// UART CONTROLLER INTERFACING
 	////////////////////////////////////////////////////////////
     uart #(
-        .CLK_FREQ(100_000_000),
-        .BAUD_RATE(115200)
+        .CLK_FREQ(50_000_000),
+        .BAUD_RATE(BAUD_RATE)
     ) UART_INST (
-        .clk        (clk),
+        .clk        (cpu_clk),
         .reset      (reset),
         .rx         (uart_rx),
         .tx         (uart_tx),
@@ -99,11 +115,30 @@ module top_fpga #(
     );
 
 	////////////////////////////////////////////////////////////
+	// HARDWARE BOOTLOADER
+	////////////////////////////////////////////////////////////
+	wire boot_we;
+	wire [31:0] boot_addr;
+	wire [31:0] boot_wdata;
+	wire cpu_reset;
+
+	bootloader boot_inst (
+		.clk(cpu_clk),
+		.reset(reset),
+		.uart_rx_ready(uart_rx_ready),
+		.uart_rx_data(uart_rx_data),
+		.cpu_reset(cpu_reset),
+		.boot_we(boot_we),
+		.boot_addr(boot_addr),
+		.boot_wdata(boot_wdata)
+	);
+
+	////////////////////////////////////////////////////////////
 	// PIPELINE CPU
 	////////////////////////////////////////////////////////////
 	pipe pipe_u (
-		.clk               (clk), // Now properly running 100MHz!
-		.reset             (reset),
+		.clk               (cpu_clk), // Now properly running 50MHz to easily clear timing bounds!
+		.reset             (cpu_reset),
 		.stall             (1'b0),
 		.exception         (exception),
 		.pc_out            (current_pc), 
@@ -129,9 +164,12 @@ module top_fpga #(
 	// INSTRUCTION MEMORY
 	////////////////////////////////////////////////////////////
 	instr_mem IMEM (
-		.clk  (clk),
+		.clk  (cpu_clk),
 		.pc   (inst_mem_address),
-		.instr(inst_mem_read_data)
+		.instr(inst_mem_read_data),
+		.boot_we(boot_we),
+		.boot_addr(boot_addr),
+		.boot_wdata(boot_wdata)
 	);
 
 
@@ -139,17 +177,20 @@ module top_fpga #(
 	// DATA MEMORY
 	////////////////////////////////////////////////////////////
 	// Prevent BRAM memory-corruption if the pipeline accidentally writes to a UART address
-    wire bram_we = dmem_write_ready && !is_uart_addr;
+    wire bram_we = boot_we ? 1'b1 : (dmem_write_ready && !is_uart_addr);
+    wire [31:0] bram_waddr = boot_we ? boot_addr : dmem_write_address;
+    wire [31:0] bram_wdata = boot_we ? boot_wdata : dmem_write_data;
+    wire [3:0]  bram_wstrb = boot_we ? 4'b1111 : dmem_write_byte;
 
 	data_mem DMEM (
-		.clk   (clk),
+		.clk   (cpu_clk),
 		.re    (dmem_read_ready && !is_uart_addr), 
 		.raddr (dmem_read_address),
 		.rdata (dmem_read_data_bram), // Native BRAM output wire
 		.we    (bram_we),
-		.waddr (dmem_write_address),
-		.wdata (dmem_write_data),
-		.wstrb (dmem_write_byte)
+		.waddr (bram_waddr),
+		.wdata (bram_wdata),
+		.wstrb (bram_wstrb)
 	);
 
 endmodule

@@ -2,7 +2,12 @@
 module instr_mem (
 	input  wire    	clk,
 	input  wire [31:0] pc, 	// byte address
-	output reg  [31:0] instr
+	output reg  [31:0] instr,
+
+	// Bootloader write port
+	input  wire        boot_we,
+	input  wire [31:0] boot_addr,
+	input  wire [31:0] boot_wdata
 );
 
 	// 2048 words = 8 KB
@@ -13,13 +18,20 @@ module instr_mem (
 	// FPGA ROM initialization
 	// Initialize instruction memory from hex file (simulation / FPGA)
 	initial begin
-    	$readmemh("C:/Users/Ruchi/HWLabProject/sat/risc_v_2/imem.hex", imem);
+    	$readmemh("imem.hex", imem);
 	end
 
 	// Synchronous instruction fetch
 	// Use word-aligned PC (pc[11:2]) to index memory
 	always @(posedge clk) begin
     	instr <= imem[pc[12:2]];	// word address
+	end
+
+	// Bootloader Write Port
+	always @(posedge clk) begin
+		if (boot_we) begin
+			imem[boot_addr[12:2]] <= boot_wdata;
+		end
 	end
 
 endmodule
@@ -56,7 +68,7 @@ module data_mem (
 	// Simulation / FPGA init
 	// TODO-DMEM-2: Initialize data memory from dmem.hex file
 	initial begin
-    	$readmemh("C:/Users/Ruchi/HWLabProject/sat/risc_v_2/dmem.hex", dmem);
+    	$readmemh("dmem.hex", dmem);
 	end
 
 	// -------------------------
