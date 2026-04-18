@@ -1,66 +1,52 @@
-# RISC-V 32-bit Pipelined Processor (RV32IM)
+# RV32IMF RISC-V Hardware Calculator
 
-Welcome to our custom RISC-V soft-core processor repository! This project implements a fully functional 32-bit RISC-V CPU from scratch, designed to be synthesized onto an Artix-7 FPGA. It's written entirely in Verilog and includes a custom C toolchain, memory-mapped I/O, and hardware mathematical units.
+This repository contains a 5-stage pipelined RISC-V processor with support for the RV32I (Base Integer), RV32M (Multiply/Divide), and RV32F (Single-Precision Floating Point) extensions. It includes a UART interface for communication and a C-based firmware calculator.
 
-## 🚀 What We Are Doing
-We are building a custom central processing unit (CPU) that understands the standard RISC-V instruction set architecture (specifically the **RV32IM** base integer instruction set with multiplication/division extensions). 
+## Table of Contents
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Recent Bug Fixes & Improvements](#recent-bug-fixes--improvements)
+- [Getting Started](#getting-started)
+- [Hardware Review](#hardware-review)
 
-Instead of buying a processor from companies like Intel, AMD, or ARM, we have written the underlying hardware logic ourselves. We also created our own software toolchain to take standard C code, compile it into machine code, and execute it on our physical hardware chip.
+## Features
+- **5-Stage Pipeline**: IF, ID, EX, MEM, WB with full hazard detection and forwarding.
+- **RV32F Support**: Dedicated FPU handling FADD.S, FSUB.S, FMUL.S, FLW, FSW, etc.
+- **UART Communication**: Integrated UART RX/TX for interactive debugging and data transfer.
+- **Floating Point Calculator**: C firmware that parses expressions and computes results on hardware.
 
-### Explaining The Project (For Non-Engineers)
-Think of a processor as a high-speed factory assembly line. Our project is the blueprint for a factory that processes *Math and Logic* instead of building cars.
-- **The 5-Stage Pipeline (The Assembly Line):** We built an assembly line with 5 distinct stations (Fetch, Decode, Execute, Memory, Write-Back). While one instruction is being decoded, another is being fetched, keeping the factory running at maximum efficiency.
-- **The 'M' Extension (The specialized robot):** We built a specialized circuit designed *only* to do fast multiplication and division.
-- **UART (The Walkie-Talkie):** We added a way for our processor chip to talk directly to a modern laptop screen over a standard USB/Serial cable, so we can see the results of its work in real-time.
+## Recent Bug Fixes & Improvements
 
----
+### 1. Pipeline Load-Use Hazard Fix (`pipeline.v`)
+- **Issue**: The `ex_mem_reg` was being stalled during Load-Use hazards. This caused the Load instruction to be "stuck" in the EX/MEM pipeline register, effectively deleting it and replacing it with the previous instruction.
+- **Fix**: Re-routed the stall signal for the EX/MEM stage to `stage_stall_ex` (which ignores Load-Use stalls) while maintaining proper stalls for the IF/ID/EX boundaries. This ensures Load instructions advance to memory to fetch data.
 
-## 🏗️ Architecture Overview
-The processor is built around a classic 5-stage RISC pipeline and employs a Harvard Architecture (separate instruction and data memories).
+### 2. Compiler Optimization Tuning (`build.bat`)
+- **Issue**: GCC was generating `FMADD.S` (Fused Multiply-Add) instructions, which the hardware FPU does not support, causing illegal instruction exceptions.
+- **Fix**: Added `-ffp-contract=off` to the compiler flags to disable FMA fusion, ensuring only base `FADD.S` and `FMUL.S` instructions are generated.
 
-1. **Pipeline Stages:**
-   - `if_stage.v` (Instruction Fetch): Grabs the next instruction from Instruction Memory (`imem`).
-   - `id_stage.v` (Instruction Decode): Figures out what the instruction means and reads the registers.
-   - `ex_stage.v` (Execute): The ALU (Arithmetic Logic Unit). Performs the math or logic operation.
-   - `mem_stage.v` (Memory): Reads/Writes data to the Data Memory (`dmem`).
-   - `wb_stage.v` (Write-Back): Saves the result back into the processor's register file.
+### 3. UART Terminal Stability (`terminal.py`)
+- **Issue**: The Python terminal would crash with a `ctypes` error on exit due to improper serial port handling during `KeyboardInterrupt`.
+- **Fix**: Implemented `os._exit(0)` in the interrupt handler to cleanly terminate the process and all threads.
 
-2. **Advanced Hardware:**
-   - **Hazard Unit:** (`hazard_unit.v`) Resolves data dependencies and pipeline stalls automatically to prevent incorrect math resulting from the fast assembly-line nature of the pipeline.
-   - **Multiplier/Divider:** (`mult_div.v`) A hardware unit handling the RV32M extensions.
-   - **Memory Mapped I/O (UART):** (`uart.v`, `top_fpga.v`) Communication modules mapped to address `0x8000_0000`. Writing to this exact memory address automatically sends data over a physical wire to a computer terminal.
+### 4. UART TX FIFO Optimization (`uart_tx_fifo.v`)
+- **Recommendation**: Removed asynchronous reset loops inside the memory array to allow Vivado to correctly map the FIFO to dedicated Block RAM (BRAM) instead of consuming thousands of LUTs.
 
-3. **Software Toolchain:**
-   - Located in the `c_toolchain/` directory. We write C code (like `main.c` or `workload_alu.c`), compile it, and generate hexadecimal (`imem.hex`, `dmem.hex`) files that preload into the FPGA RAM on startup.
+## Hardware Review & Progress Report
 
----
+> [!IMPORTANT]
+> **Status**: The pipeline is now functionally correct at the architectural level. The critical "vanishing Load" bug has been resolved.
 
-## 🖥️ How to Run & See Outputs
+### Critical Findings:
+1. **The "Silent" Pipeline Freeze**: The most significant blocker was the `ex_mem_reg` stalling during memory reads. Because the pipeline was technically still "running" but skipping memory loads, the firmware would loop infinitely or jump to zero-value addresses.
+2. **Instruction Set Mismatch**: The RV32F implementation is specialized. Users must ensure the compiler is restricted from using Fused Multiply-Add (FMA) unless the FPU is upgraded to support the 3-op instruction format.
+3. **UART Synchronization**: The 1-cycle latency match for UART reads in `top_fpga.v` is correctly implemented using `is_uart_read_r`, matching the BRAM timing.
 
-### 1. Observing Through Simulation (Software Only)
-If you don't have the FPGA board physically plugged into your computer, you can still test the logic using **Icarus Verilog**:
-1. Open a terminal in the root directory.
-2. Compile the CPU testbench:
-   ```bash
-   iverilog -o sim_soc.vvp tb_uart_soc.v top_fpga.v ...
-   ```
-   *(Scripts are provided in the repo to handle compilation automatically).*
-3. Run the simulation:
-   ```bash
-   vvp sim_soc.vvp
-   ```
-4. Output text from the simulated CPU will print directly to your terminal. Waveform data will be saved to a `.vcd` file which you can open visually in **GTKWave**.
-
-### 2. Observing on the Physical FPGA (Hardware)
-To see the processor running in real life on the Artix-7 board:
-1. Synthesize the project using Xilinx Vivado, utilizing the constraints mapped out in `constraint.xdc`.
-2. Flash the generated bitstream onto the FPGA board.
-3. Once the board is flashing (you'll see diagnostic LEDs light up!), plug a serial cable from the board to your PC.
-4. Open a serial monitor like **PuTTY** or **TeraTerm**.
-   - **Port:** (Check Device Manager, e.g., `COM3`)
-   - **Baud Rate:** `115200`
-   - **Data bits:** `8`, **Stop bits:** `1`, **Parity:** `None`
-5. Press the reset button on the FPGA to restart the program. You will see the C program's output print live into your PuTTY window!
+### Recommendations for Future Development:
+- **FPGA Utilization**: Monitor BRAM usage if the UART FIFO depth is increased.
+- **FPU Exceptions**: Consider implementing IEEE-754 exception flags (Invalid, Overflow, etc.) in the CSR file for better debugging of edge-case math.
+- **Timing Analysis**: As more features are added, check the "Set Up" and "Hold" times in Vivado, especially regarding the long paths through the FPU.
 
 ---
-*Created for our Hardware Lab Project.*
+**Maintained by**: Antigravity AI & Purushottam Jha
+**Date**: April 2026

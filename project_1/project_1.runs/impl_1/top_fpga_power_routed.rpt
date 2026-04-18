@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
-| Date             : Sat Apr 18 20:18:45 2026
+| Date             : Sat Apr 18 21:26:03 2026
 | Host             : DESKTOP-828PQJS running 64-bit major release  (build 9200)
 | Command          : report_power -file top_fpga_power_routed.rpt -pb top_fpga_power_summary_routed.pb -rpx top_fpga_power_routed.rpx
 | Design           : top_fpga
@@ -30,7 +30,7 @@ Table of Contents
 ----------
 
 +--------------------------+--------------+
-| Total On-Chip Power (W)  | 0.166        |
+| Total On-Chip Power (W)  | 0.167        |
 | Design Power Budget (W)  | Unspecified* |
 | Power Budget Margin (W)  | NA           |
 | Dynamic (W)              | 0.069        |
@@ -52,9 +52,9 @@ Table of Contents
 +--------------------------+-----------+----------+-----------+-----------------+
 | On-Chip                  | Power (W) | Used     | Available | Utilization (%) |
 +--------------------------+-----------+----------+-----------+-----------------+
-| Clocks                   |    <0.001 |        3 |       --- |             --- |
-| Slice Logic              |     0.019 |    13920 |       --- |             --- |
-|   LUT as Logic           |     0.018 |     5101 |     63400 |            8.05 |
+| Clocks                   |     0.001 |        3 |       --- |             --- |
+| Slice Logic              |     0.020 |    13924 |       --- |             --- |
+|   LUT as Logic           |     0.018 |     5104 |     63400 |            8.05 |
 |   CARRY4                 |    <0.001 |      237 |     15850 |            1.50 |
 |   Register               |    <0.001 |     3822 |    126800 |            3.01 |
 |   F7/F8 Muxes            |    <0.001 |     1753 |     63400 |            2.76 |
@@ -66,7 +66,7 @@ Table of Contents
 | DSPs                     |    <0.001 |        2 |       240 |            0.83 |
 | I/O                      |     0.006 |       20 |       210 |            9.52 |
 | Static Power             |     0.097 |          |           |                 |
-| Total                    |     0.166 |          |           |                 |
+| Total                    |     0.167 |          |           |                 |
 +--------------------------+-----------+----------+-----------+-----------------+
 
 
@@ -76,7 +76,7 @@ Table of Contents
 +-----------+-------------+-----------+-------------+------------+-------------+-------------+------------+
 | Source    | Voltage (V) | Total (A) | Dynamic (A) | Static (A) | Powerup (A) | Budget (A)  | Margin (A) |
 +-----------+-------------+-----------+-------------+------------+-------------+-------------+------------+
-| Vccint    |       1.000 |     0.078 |       0.063 |      0.015 |       NA    | Unspecified | NA         |
+| Vccint    |       1.000 |     0.079 |       0.064 |      0.015 |       NA    | Unspecified | NA         |
 | Vccaux    |       1.800 |     0.018 |       0.000 |      0.018 |       NA    | Unspecified | NA         |
 | Vcco33    |       3.300 |     0.006 |       0.002 |      0.004 |       NA    | Unspecified | NA         |
 | Vcco25    |       2.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
@@ -148,14 +148,14 @@ Table of Contents
 | top_fpga         |     0.069 |
 |   IMEM           |     0.003 |
 |   boot_inst      |     0.007 |
-|   pipe_u         |     0.048 |
+|   pipe_u         |     0.049 |
 |     u_ex_mem_reg |     0.009 |
-|     u_ex_stage   |     0.006 |
+|     u_ex_stage   |     0.005 |
 |       u_fpu      |     0.002 |
 |       u_mult_div |     0.003 |
 |     u_fp_regfile |     0.002 |
-|     u_id_ex_reg  |     0.007 |
-|     u_if_id_reg  |     0.009 |
+|     u_id_ex_reg  |     0.008 |
+|     u_if_id_reg  |     0.010 |
 |     u_mem_wb_reg |     0.015 |
 +------------------+-----------+
 

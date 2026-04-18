@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
-| Date         : Sat Apr 18 20:15:42 2026
+| Date         : Sat Apr 18 21:22:29 2026
 | Host         : DESKTOP-828PQJS running 64-bit major release  (build 9200)
 | Command      : report_utilization -file top_fpga_utilization_synth.rpt -pb top_fpga_utilization_synth.pb
 | Design       : top_fpga
@@ -31,8 +31,8 @@ Table of Contents
 +----------------------------+------+-------+------------+-----------+-------+
 |          Site Type         | Used | Fixed | Prohibited | Available | Util% |
 +----------------------------+------+-------+------------+-----------+-------+
-| Slice LUTs*                | 7501 |     0 |          0 |     63400 | 11.83 |
-|   LUT as Logic             | 5261 |     0 |          0 |     63400 |  8.30 |
+| Slice LUTs*                | 7505 |     0 |          0 |     63400 | 11.84 |
+|   LUT as Logic             | 5265 |     0 |          0 |     63400 |  8.30 |
 |   LUT as Memory            | 2240 |     0 |          0 |     19000 | 11.79 |
 |     LUT as Distributed RAM | 2240 |     0 |            |           |       |
 |     LUT as Shift Register  |    0 |     0 |            |           |       |
@@ -159,9 +159,9 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 | LUT6     | 2923 |                 LUT |
 | RAMD64E  | 2240 |  Distributed Memory |
 | MUXF7    | 1521 |               MuxFx |
-| LUT5     |  891 |                 LUT |
-| LUT4     |  755 |                 LUT |
-| LUT3     |  565 |                 LUT |
+| LUT5     |  892 |                 LUT |
+| LUT4     |  760 |                 LUT |
+| LUT3     |  563 |                 LUT |
 | LUT2     |  492 |                 LUT |
 | LUT1     |  258 |                 LUT |
 | CARRY4   |  237 |          CarryLogic |

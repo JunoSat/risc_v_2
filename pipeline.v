@@ -318,7 +318,7 @@ module pipe #(
     id_ex_reg u_id_ex_reg (
         .clk             (clk),
         .reset           (reset),
-        .stall           (stage_stall_ex),
+        .stall           (stage_stall_id),
         .flush           (flush_id_haz),
         
         .pc_i            (id_pc),
@@ -448,7 +448,7 @@ module pipe #(
         .mem_read_i     (ex_mem_read && !stall),
         .mem_to_reg_i   (ex_mem_to_reg),
         .alu_to_reg_i   (ex_alu_to_reg),
-        .stall          (stall | stall_ex_haz),
+        .stall          (stage_stall_ex),
         .flush          (stage_flush_ex),
         
         .csr_we_i       (ex_csr_we),
