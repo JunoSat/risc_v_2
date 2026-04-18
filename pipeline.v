@@ -232,6 +232,9 @@ module pipe #(
         .id_ex_rd         (ex_rd),
         .if_id_rs1        (id_rs1),
         .if_id_rs2        (id_rs2),
+
+        .ex_mem_is_fp     (mem_fp_reg_write), // <--- ADD THIS
+        .mem_wb_is_fp     (wb_fp_reg_write),  // <--- ADD THIS
         
         .ex_mem_reg_write (mem_alu_to_reg),
         .ex_mem_rd        (mem_rd),
