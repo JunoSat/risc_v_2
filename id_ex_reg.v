@@ -37,6 +37,7 @@ module id_ex_reg (
     
     // RV32F
     input  wire        fp_en_i,
+    input  wire        fp_writes_int_i, // <--- NEW: Int write override
     input  wire        fp_load_i,
     input  wire        fp_store_i,
     input  wire [4:0]  fp_funct5_i,
@@ -71,6 +72,7 @@ module id_ex_reg (
     
     // RV32F
     output reg         fp_en_o,
+    output reg         fp_writes_int_o, // <--- NEW: Int write override
     output reg         fp_load_o,
     output reg         fp_store_o,
     output reg  [4:0]  fp_funct5_o,
@@ -104,7 +106,9 @@ module id_ex_reg (
             mult_div_en_o   <= 1'b0;
             is_csr_o        <= 1'b0;
             csr_addr_o      <= 12'h0;
+            
             fp_en_o         <= 1'b0;
+            fp_writes_int_o <= 1'b0; // <--- NEW
             fp_load_o       <= 1'b0;
             fp_store_o      <= 1'b0;
             fp_funct5_o     <= 5'h0;
@@ -136,7 +140,9 @@ module id_ex_reg (
             mult_div_en_o   <= 1'b0;
             is_csr_o        <= 1'b0;
             csr_addr_o      <= 12'h0;
+            
             fp_en_o         <= 1'b0;
+            fp_writes_int_o <= 1'b0; // <--- NEW
             fp_load_o       <= 1'b0;
             fp_store_o      <= 1'b0;
             fp_funct5_o     <= 5'h0;
@@ -168,7 +174,9 @@ module id_ex_reg (
             mult_div_en_o   <= mult_div_en_i;
             is_csr_o        <= is_csr_i;
             csr_addr_o      <= csr_addr_i;
+            
             fp_en_o         <= fp_en_i;
+            fp_writes_int_o <= fp_writes_int_i; // <--- NEW
             fp_load_o       <= fp_load_i;
             fp_store_o      <= fp_store_i;
             fp_funct5_o     <= fp_funct5_i;

@@ -183,6 +183,9 @@ module pipe #(
     wire [31:0] fp_regs_rdata1;
     wire [31:0] fp_regs_rdata2;
 
+    wire        id_fp_writes_int;
+    wire        ex_fp_writes_int;
+
     assign id_fp_rdata1  = (wb_fp_reg_write && (wb_rd == id_rs1)) ? wb_result : fp_regs_rdata1;
     assign id_fp_rdata2  = (wb_fp_reg_write && (wb_rd == id_rs2)) ? wb_result : fp_regs_rdata2;
 
@@ -320,8 +323,9 @@ module pipe #(
         .fp_en         (id_fp_en),
         .fp_load       (id_fp_load),
         .fp_store      (id_fp_store),
-        .fp_funct5     (id_fp_funct5)
-    );
+        .fp_funct5     (id_fp_funct5),
+        .fp_writes_int (id_fp_writes_int) // <--- Connect the new output from ID
+       );
 
     id_ex_reg u_id_ex_reg (
         .clk             (clk),
@@ -392,6 +396,9 @@ module pipe #(
         .fp_funct5_o     (ex_fp_funct5),
         .fp_rdata1_o     (ex_fp_rdata1),
         .fp_rdata2_o     (ex_fp_rdata2)
+
+        .fp_writes_int_i (id_fp_writes_int), // <--- Input to reg
+        .fp_writes_int_o (ex_fp_writes_int) // <--- Output from reg
     );
 
     ex_stage u_ex_stage (
