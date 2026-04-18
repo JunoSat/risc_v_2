@@ -130,7 +130,7 @@ module pipe #(
     wire [4:0]  ex_fp_funct5;
     wire [31:0] ex_fp_rdata1;
     wire [31:0] ex_fp_rdata2;
-    wire        ex_fp_reg_write = ex_fp_en | ex_fp_load;
+
     
     // Internal EX -> EX/MEM Reg
     wire [31:0] ex_result_calc;
@@ -259,6 +259,13 @@ module pipe #(
     // ----------------------------------------------------
     // CSR File
     // ----------------------------------------------------
+   // 1. Create a custom wire to generate the Exception Cause Code
+    // We will use '24' for Div-By-Zero.
+    wire [31:0] trap_cause = ex_div_zero_fault ? 32'd24 : 32'd0;
+
+    // 2// ----------------------------------------------------
+    // CSR File
+    // ----------------------------------------------------
     csr_file u_csr_file (
         .clk              (clk),
         .reset            (reset),
@@ -270,9 +277,9 @@ module pipe #(
         .csr_waddr        (wb_csr_addr),
         .csr_wdata        (wb_csr_wdata),
         
-        // Trap logic uses pc from EX stage where fault evaluates
+        // Fix: Use the generic ex_exception wire to trigger Cause 24 (Div-by-Zero)
         .exception_trigger(ex_exception),
-        .exception_cause  (ex_exception ? 32'd2 : 32'b0), // Ex: hardware specific fault code
+        .exception_cause  (ex_exception ? 32'd24 : 32'b0), 
         .exception_pc     (ex_pc),
         .exception_vector (exception_vector)
     );
