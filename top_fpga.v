@@ -173,20 +173,20 @@ module top_fpga #(
 	);
 
 
-	////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
 	// DATA MEMORY
 	////////////////////////////////////////////////////////////
-	// Prevent BRAM memory-corruption if the pipeline accidentally writes to a UART address
-    wire bram_we = boot_we ? 1'b1 : (dmem_write_ready && !is_uart_addr);
-    wire [31:0] bram_waddr = boot_we ? boot_addr : dmem_write_address;
-    wire [31:0] bram_wdata = boot_we ? boot_wdata : dmem_write_data;
-    wire [3:0]  bram_wstrb = boot_we ? 4'b1111 : dmem_write_byte;
+	// Fix: Removed boot_we override so bootloader doesn't corrupt DMEM
+    wire bram_we = (dmem_write_ready && !is_uart_addr); 
+    wire [31:0] bram_waddr = dmem_write_address;
+    wire [31:0] bram_wdata = dmem_write_data;
+    wire [3:0]  bram_wstrb = dmem_write_byte;
 
 	data_mem DMEM (
 		.clk   (cpu_clk),
 		.re    (dmem_read_ready && !is_uart_addr), 
 		.raddr (dmem_read_address),
-		.rdata (dmem_read_data_bram), // Native BRAM output wire
+		.rdata (dmem_read_data_bram), 
 		.we    (bram_we),
 		.waddr (bram_waddr),
 		.wdata (bram_wdata),
