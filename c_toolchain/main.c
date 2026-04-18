@@ -1,4 +1,5 @@
 #include "util.h"
+#include "workload_alu.h" // Include the automated tests
 
 void c_trap_handler() {
     print_string("\r\n[HARDWARE EXCEPTION]: Math/Div-By-Zero Fault Evaluated.\r\n");
@@ -147,6 +148,19 @@ void parse_and_execute(char* line) {
 }
 
 int main() {
+
+    // 1. Print Startup Banner
+    print_string("\r\n==========================================================\r\n");
+    print_string("             FPGA HARDWARE BOOT SEQUENCE                  \r\n");
+    print_string("==========================================================\r\n");
+
+    // 2. RUN AUTOMATED HARDWARE TESTS
+    int errors = run_alu_diagnostic();
+    
+    // 3. Print the Results
+    print_string("\r\nDiagnostic Complete. Total Errors: ");
+    print_int(errors);
+    print_string("\r\n\r\n");
     print_string("\r\n============================================\r\n");
     print_string("   RV32IMF HARDWARE CALCULATOR ONLINE\r\n");
     print_string("============================================\r\n");
