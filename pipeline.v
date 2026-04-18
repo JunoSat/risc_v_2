@@ -210,6 +210,14 @@ module pipe #(
         end
     end
 
+
+    // In pipeline.v, modify the EX writeback logic:
+    // An instruction writes to FP reg if it's an FP op AND it doesn't target an INT reg.
+    wire ex_fp_reg_write = (ex_fp_en && !ex_fp_writes_int) | ex_fp_load;
+    
+    // An instruction writes to INT reg if it's standard ALU, OR if it's an FP op targeting INT.
+    wire ex_alu_to_reg = (ex_alu | ex_lui | ex_jal | ex_jalr | ex_mem_to_reg | ex_is_csr | ex_mult_div_en | ex_fp_writes_int);
+
     // ----------------------------------------------------
     // Modules
     // ----------------------------------------------------

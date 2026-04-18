@@ -26,6 +26,7 @@ module id_stage (
     output wire        fp_load,
     output wire        fp_store,
     output wire [4:0]  fp_funct5,
+    output wire        fp_writes_int,
     
     // RV32M and CSR extensions
     output wire        mult_div_en,
@@ -64,6 +65,9 @@ module id_stage (
     assign mult_div_en  = (opcode == ARITHR) && (instruction_i[31:25] == 7'b0000001);
     assign is_csr       = (opcode == SYSTEM) && (alu_op != PRIV);
     assign csr_addr     = instruction_i[31:20];
+
+    assign fp_writes_int = (opcode == OP_FP) && 
+                           (fp_funct5 == 5'b10100 || fp_funct5 == 5'b11000 || fp_funct5 == 5'b11100);
 
     always @(*) begin
         immediate    = 32'h0;
