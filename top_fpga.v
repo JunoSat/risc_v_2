@@ -164,7 +164,7 @@ module top_fpga #(
 	// INSTRUCTION MEMORY
 	////////////////////////////////////////////////////////////
 	instr_mem IMEM (
-		.clk  (cpu_clk),
+		.clk  (clk),
 		.pc   (inst_mem_address),
 		.instr(inst_mem_read_data),
 		.boot_we(boot_we),
@@ -176,14 +176,14 @@ module top_fpga #(
 ////////////////////////////////////////////////////////////
 	// DATA MEMORY
 	////////////////////////////////////////////////////////////
-	// Fix: Removed boot_we override so bootloader doesn't corrupt DMEM
-    wire bram_we = (dmem_write_ready && !is_uart_addr); 
+	// FIX 2: Removed all 'boot_we' overrides. Bootloader must only touch IMEM.
+    wire bram_we = (dmem_write_ready && !is_uart_addr);
     wire [31:0] bram_waddr = dmem_write_address;
     wire [31:0] bram_wdata = dmem_write_data;
     wire [3:0]  bram_wstrb = dmem_write_byte;
 
 	data_mem DMEM (
-		.clk   (cpu_clk),
+		.clk   (cpu_clk), // DMEM stays at 50MHz to match pipeline
 		.re    (dmem_read_ready && !is_uart_addr), 
 		.raddr (dmem_read_address),
 		.rdata (dmem_read_data_bram), 
@@ -192,5 +192,4 @@ module top_fpga #(
 		.wdata (bram_wdata),
 		.wstrb (bram_wstrb)
 	);
-
 endmodule

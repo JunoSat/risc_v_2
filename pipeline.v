@@ -395,7 +395,7 @@ module pipe #(
         .fp_store_o      (ex_fp_store),
         .fp_funct5_o     (ex_fp_funct5),
         .fp_rdata1_o     (ex_fp_rdata1),
-        .fp_rdata2_o     (ex_fp_rdata2)
+        .fp_rdata2_o     (ex_fp_rdata2),
 
         .fp_writes_int_i (id_fp_writes_int), // <--- Input to reg
         .fp_writes_int_o (ex_fp_writes_int) // <--- Output from reg
