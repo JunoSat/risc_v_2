@@ -50,6 +50,11 @@ module hazard_unit (
         if (ex_mem_reg_write && (ex_mem_rd != 5'd0) && (ex_mem_rd == id_ex_rs1)) begin
             forward_a = 2'b10;
         end
+        // Inside hazard_unit.v EX Hazard check:
+        // Forward if it's an FP write (even to f0), OR if it's an INT write to a non-zero register.
+        if (ex_mem_reg_write && (ex_mem_is_fp || (ex_mem_rd != 5'd0)) && (ex_mem_rd == id_ex_rs1)) begin
+            forward_a = 2'b10;
+        end
         // MEM Hazard
         else if (mem_wb_reg_write && (mem_wb_rd != 5'd0) && (mem_wb_rd == id_ex_rs1)) begin
             forward_a = 2'b01;
