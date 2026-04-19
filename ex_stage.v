@@ -13,6 +13,7 @@ module ex_stage (
     input  wire        immediate_sel_i,
     input  wire        alu_i,
     input  wire        lui_i,
+    input  wire        auipc_i,   // RV32I AUIPC: result = pc + (imm20 << 12)
     input  wire        jal_i,
     input  wire        jalr_i,
     input  wire        branch_i,
@@ -233,6 +234,13 @@ module ex_stage (
         end
         else if (lui_i) begin
             ex_result = immediate_i;
+        end
+        else if (auipc_i) begin
+            // AUIPC is PC-relative. Without this case the default
+            // `alu_operand1 + immediate_i` computed `x0 + imm`, which broke
+            // every PC-relative address the compiler generated (string
+            // pointers, global data, trap-vector setup, etc.).
+            ex_result = pc_i + immediate_i;
         end
         else if (is_csr_i) begin
             ex_result = csr_rdata_i; // Output old CSR value to rd

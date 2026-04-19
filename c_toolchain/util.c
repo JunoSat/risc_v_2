@@ -12,9 +12,14 @@ char get_char() {
 }
 
 void print_char(char c) {
-    // Wait until TX is ready
+    // Wait until TX is ready (hardware flag might be stuck, keeping for legacy)
     while ((*UART_STATUS & 1) != 0); 
     *UART_TX_DATA = (int) c;
+    
+    // SOFTWARE WORKAROUND: Force a fixed delay to prevent FIFO overflow.
+    // At 50MHz, 115200 baud requires ~434 cycles per bit -> ~4340 cycles per char.
+    // This loop takes > 10,000 cycles, ensuring the UART pops the byte before we send another.
+    for (volatile int delay = 0; delay < 2000; delay++);
 }
 
 void print_string(const char* str) {

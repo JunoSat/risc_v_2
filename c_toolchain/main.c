@@ -161,6 +161,23 @@ void parse_and_execute(char* line) {
     print_string("\r\n");
 }
 
+// Small self-contained demonstration of the four operations over int and
+// float so the workload drives every datapath (ALU / M / F) without waiting
+// on the host terminal.
+static void show_int(const char* label, int a, int b, int r) {
+    print_string(label); print_int(a);
+    print_string(", "); print_int(b);
+    print_string(") = "); print_int(r);
+    print_string("\r\n");
+}
+
+static void show_flt(const char* label, float a, float b, float r) {
+    print_string(label); print_float(a);
+    print_string(", "); print_float(b);
+    print_string(") = "); print_float(r);
+    print_string("\r\n");
+}
+
 int main() {
 
     // 1. Print Startup Banner
@@ -170,22 +187,32 @@ int main() {
 
     // 2. RUN AUTOMATED HARDWARE TESTS
     int errors = run_alu_diagnostic();
-    
+
     // 3. Print the Results
     print_string("\r\nDiagnostic Complete. Total Errors: ");
     print_int(errors);
     print_string("\r\n\r\n");
-    print_string("\r\n============================================\r\n");
-    print_string("   RV32IMF HARDWARE CALCULATOR ONLINE\r\n");
+
+    // 4. Fixed calculator demonstration (no terminal input needed)
     print_string("============================================\r\n");
-    print_string("Type 'help' for instructions.\r\n");
-    
-    char line_buf[128];
-    while (1) {
-        print_string("calc> ");
-        read_line(line_buf, 128);
-        parse_and_execute(line_buf);
-    }
-    
-    return 0; // Never reached
+    print_string("   RV32IMF CALCULATOR DEMONSTRATION\r\n");
+    print_string("============================================\r\n");
+
+    int ia = 17, ib = 5;
+    show_int("int add(",  ia, ib, ia + ib);
+    show_int("int sub(",  ia, ib, ia - ib);
+    show_int("int mul(",  ia, ib, ia * ib);
+    show_int("int div(",  ia, ib, ia / ib);
+
+    float fa = 5.25f, fb = 3.125f;
+    show_flt("flt add(", fa, fb, fa + fb);
+    show_flt("flt sub(", fa, fb, fa - fb);
+    show_flt("flt mul(", fa, fb, fa * fb);
+    show_flt("flt div(", fa, fb, fa / fb);
+
+    print_string("\r\n[DONE] Workload complete. Halting.\r\n");
+
+    // 5. Halt - spin forever so the CPU does not drift into garbage memory.
+    while (1) { }
+    return 0;
 }

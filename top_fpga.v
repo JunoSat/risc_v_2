@@ -15,6 +15,14 @@ module top_fpga #(
 	wire [31:0] current_pc;
 	wire exception;
 
+	// Declare bootloader control nets up front so later logic (uart_rx_ack
+	// in particular) can reference cpu_reset without triggering a
+	// "used-before-declaration" Synth 8-6901 warning.
+	wire        cpu_reset;
+	wire        boot_we;
+	wire [31:0] boot_addr;
+	wire [31:0] boot_wdata;
+
     // --- CLOCK DIVIDER TO 50MHz ---
     // Safely resolves the -1.765ns Setup Timing Violation on the long 
     // Is_uart_read_r -> mem_read_data -> FW -> EX -> Branch -> Flush -> Pipeline_CE path.
@@ -117,11 +125,6 @@ module top_fpga #(
 	////////////////////////////////////////////////////////////
 	// HARDWARE BOOTLOADER
 	////////////////////////////////////////////////////////////
-	wire boot_we;
-	wire [31:0] boot_addr;
-	wire [31:0] boot_wdata;
-	wire cpu_reset;
-
 	bootloader boot_inst (
 		.clk(cpu_clk),
 		.reset(reset),
@@ -176,11 +179,16 @@ module top_fpga #(
 ////////////////////////////////////////////////////////////
 	// DATA MEMORY
 	////////////////////////////////////////////////////////////
-	// FIX 2: Removed all 'boot_we' overrides. Bootloader must only touch IMEM.
-    wire bram_we = (dmem_write_ready && !is_uart_addr);
-    wire [31:0] bram_waddr = dmem_write_address;
-    wire [31:0] bram_wdata = dmem_write_data;
-    wire [3:0]  bram_wstrb = dmem_write_byte;
+    // Bootloader also mirrors every payload word into DMEM so that .rodata /
+    // .data living past the .text segment is coherent with the freshly loaded
+    // program. Without this, DMEM keeps whatever was baked into the bitstream
+    // via $readmemh and the CPU reads garbage for every string / constant.
+    // The CPU is held in reset while boot_we pulses, so the two producers of
+    // these write signals are mutually exclusive.
+    wire bram_we           = boot_we || (dmem_write_ready && !is_uart_addr);
+    wire [31:0] bram_waddr = boot_we ? boot_addr  : dmem_write_address;
+    wire [31:0] bram_wdata = boot_we ? boot_wdata : dmem_write_data;
+    wire [3:0]  bram_wstrb = boot_we ? 4'b1111    : dmem_write_byte;
 
 	data_mem DMEM (
 		.clk   (cpu_clk), // DMEM stays at 50MHz to match pipeline

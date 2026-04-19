@@ -29,7 +29,7 @@ module if_stage #(
     assign pc_o             = pc_reg;
     assign inst_mem_is_ready = ~stall;
 
-    always @(posedge clk or negedge reset) begin
+    always @(posedge clk) begin
         if (!reset) begin
             pc_reg <= RESET_PC;
         end

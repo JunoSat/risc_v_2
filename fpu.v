@@ -71,12 +71,21 @@ module fpu(
     end
 
     // --- MAIN FSM ---
+    // Reset all FSM-owned state in one block so the synthesiser sees a clear
+    // priority between reset and the case-branch assignments (resolves Synth
+    // 8-7137 "set and reset with same priority" on exp_res / mant_res etc.).
     always @(posedge clk or negedge reset) begin
         if (!reset) begin
-            state <= IDLE;
-            computing <= 0;
-            final_res <= 0;
-            final_exc <= 0;
+            state     <= IDLE;
+            computing <= 1'b0;
+            final_res <= 32'b0;
+            final_exc <= 1'b0;
+            sign_res  <= 1'b0;
+            exp_res   <= 10'sd0;
+            mant_res  <= 48'b0;
+            iter_acc  <= 52'b0;
+            iter_div  <= 26'b0;
+            iter_count<= 6'b0;
         end else begin
             case(state)
                 IDLE: begin

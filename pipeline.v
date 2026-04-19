@@ -78,6 +78,7 @@ module pipe #(
     wire        id_immediate_sel;
     wire        id_alu;
     wire        id_lui;
+    wire        id_auipc;
     wire        id_jal;
     wire        id_jalr;
     wire        id_branch;
@@ -114,6 +115,7 @@ module pipe #(
     wire        ex_immediate_sel;
     wire        ex_alu;
     wire        ex_lui;
+    wire        ex_auipc;
     wire        ex_jal;
     wire        ex_jalr;
     wire        ex_branch;
@@ -205,7 +207,7 @@ module pipe #(
     // RegFile Write
     // ----------------------------------------------------
     integer i;
-    always @(posedge clk or negedge reset) begin
+    always @(posedge clk) begin
         if (!reset) begin
             for (i=1; i<32; i=i+1) regs[i] <= 32'b0;
         end else if (wb_alu_to_reg && !wb_fp_reg_write && wb_rd != 5'd0 && !stall) begin
@@ -219,7 +221,7 @@ module pipe #(
     wire ex_fp_reg_write = (ex_fp_en && !ex_fp_writes_int) | ex_fp_load;
     
     // An instruction writes to INT reg if it's standard ALU, OR if it's an FP op targeting INT.
-    wire ex_alu_to_reg = (ex_alu | ex_lui | ex_jal | ex_jalr | ex_mem_to_reg | ex_is_csr | ex_mult_div_en | ex_fp_writes_int);
+    wire ex_alu_to_reg = (ex_alu | ex_lui | ex_auipc | ex_jal | ex_jalr | ex_mem_to_reg | ex_is_csr | ex_mult_div_en | ex_fp_writes_int);
 
     // ----------------------------------------------------
     // Modules
@@ -300,7 +302,8 @@ module pipe #(
         .inst_mem_read_data(inst_mem_read_data),
         .inst_mem_is_valid (inst_mem_is_valid),
         .id_pc             (id_pc),
-        .id_instruction    (id_inst)
+        .id_instruction    (id_inst),
+        .id_valid          ()  // unused; reg is internal, NOP-gating already handled
     );
 
     id_stage u_id_stage (
@@ -309,6 +312,7 @@ module pipe #(
         .immediate_sel (id_immediate_sel),
         .alu           (id_alu),
         .lui           (id_lui),
+        .auipc         (id_auipc),
         .jal           (id_jal),
         .jalr          (id_jalr),
         .branch        (id_branch),
@@ -349,6 +353,7 @@ module pipe #(
         .immediate_sel_i (id_immediate_sel),
         .alu_i           (id_alu),
         .lui_i           (id_lui),
+        .auipc_i         (id_auipc),
         .jal_i           (id_jal),
         .jalr_i          (id_jalr),
         .branch_i        (id_branch),
@@ -381,6 +386,7 @@ module pipe #(
         .immediate_sel_o (ex_immediate_sel),
         .alu_o           (ex_alu),
         .lui_o           (ex_lui),
+        .auipc_o         (ex_auipc),
         .jal_o           (ex_jal),
         .jalr_o          (ex_jalr),
         .branch_o        (ex_branch),
@@ -417,6 +423,7 @@ module pipe #(
         .immediate_sel_i    (ex_immediate_sel),
         .alu_i              (ex_alu),
         .lui_i              (ex_lui),
+        .auipc_i            (ex_auipc),
         .jal_i              (ex_jal),
         .jalr_i             (ex_jalr),
         .branch_i           (ex_branch),

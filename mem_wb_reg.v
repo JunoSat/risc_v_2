@@ -39,7 +39,7 @@ module mem_wb_reg (
     output reg         fp_reg_write_o
 );
 
-    always @(posedge clk or negedge reset) begin
+    always @(posedge clk) begin
         if (!reset) begin
             ex_result_o               <= 32'h0;
             dest_reg_sel_o            <= 5'h0;

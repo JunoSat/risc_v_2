@@ -57,7 +57,7 @@ for i in range(0, len(payload), chunk_size):
     time.sleep(0.005)
 
 time.sleep(1.0)            # Give the FPGA 1 full second to finish echoing the file
-ser.reset_input_buffer()
+# ser.reset_input_buffer()
 
 print("Payload dispatched successfully. Dropping into interactive shell...")
 print("==========================================================")

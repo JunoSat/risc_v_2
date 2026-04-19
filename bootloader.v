@@ -26,8 +26,20 @@ module bootloader (
     reg [31:0] payload_size;
     reg [31:0] bytes_received;
 
-    always @(posedge clk or negedge reset) begin
-        if (!reset) begin
+    // Synchronous reset: Xilinx BRAM write/address pins fed by this FSM
+    // must not see asynchronous reset release (DRC warning, can glitch BRAM
+    // contents at reset de-assertion). The external `reset` is still the
+    // board reset button; a double-synchronised `reset_sync` drives the FSM
+    // fully synchronously off clk.
+    reg reset_sync_0, reset_sync_1;
+    always @(posedge clk) begin
+        reset_sync_0 <= reset;
+        reset_sync_1 <= reset_sync_0;
+    end
+    wire reset_n = reset_sync_1;   // active-low, sync
+
+    always @(posedge clk) begin
+        if (!reset_n) begin
             state <= S_IDLE;
             cpu_reset <= 1'b0; // Hold CPU in reset
             boot_we <= 1'b0;

@@ -30,7 +30,8 @@ module wb_stage (
                     ? {{16{dmem_read_data_i[31]}}, dmem_read_data_i[31:16]}
                     : {{16{dmem_read_data_i[15]}}, dmem_read_data_i[15:0]};
             end
-            LW, FLW_FSW: formatted_mem_read = dmem_read_data_i;
+            // LW and FLW_FSW share FUNC3 3'b010 — a single case covers both.
+            LW: formatted_mem_read = dmem_read_data_i;
             LBU: begin
                 case (mem_read_address_offset_i)
                     2'b00: formatted_mem_read = {24'h0, dmem_read_data_i[7:0]};

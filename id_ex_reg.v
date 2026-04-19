@@ -21,6 +21,7 @@ module id_ex_reg (
     input  wire        immediate_sel_i,
     input  wire        alu_i,
     input  wire        lui_i,
+    input  wire        auipc_i,   // RV32I AUIPC: result = pc + (imm20 << 12)
     input  wire        jal_i,
     input  wire        jalr_i,
     input  wire        branch_i,
@@ -57,6 +58,7 @@ module id_ex_reg (
     output reg         immediate_sel_o,
     output reg         alu_o,
     output reg         lui_o,
+    output reg         auipc_o,
     output reg         jal_o,
     output reg         jalr_o,
     output reg         branch_o,
@@ -80,7 +82,7 @@ module id_ex_reg (
     output reg  [31:0] fp_rdata2_o
 );
 
-    always @(posedge clk or negedge reset) begin
+    always @(posedge clk) begin
         if (!reset) begin
             pc_o            <= 32'h0;
             immediate_o     <= 32'h0;
@@ -94,6 +96,7 @@ module id_ex_reg (
             immediate_sel_o <= 1'b0;
             alu_o           <= 1'b0;
             lui_o           <= 1'b0;
+            auipc_o         <= 1'b0;
             jal_o           <= 1'b0;
             jalr_o          <= 1'b0;
             branch_o        <= 1'b0;
@@ -102,11 +105,11 @@ module id_ex_reg (
             mem_to_reg_o    <= 1'b0;
             arithsubtype_o  <= 1'b0;
             illegal_inst_o  <= 1'b0;
-            
+
             mult_div_en_o   <= 1'b0;
             is_csr_o        <= 1'b0;
             csr_addr_o      <= 12'h0;
-            
+
             fp_en_o         <= 1'b0;
             fp_writes_int_o <= 1'b0; // <--- NEW
             fp_load_o       <= 1'b0;
@@ -128,6 +131,7 @@ module id_ex_reg (
             immediate_sel_o <= 1'b0;
             alu_o           <= 1'b0;
             lui_o           <= 1'b0;
+            auipc_o         <= 1'b0;
             jal_o           <= 1'b0;
             jalr_o          <= 1'b0;
             branch_o        <= 1'b0;
@@ -136,11 +140,11 @@ module id_ex_reg (
             mem_to_reg_o    <= 1'b0;
             arithsubtype_o  <= 1'b0;
             illegal_inst_o  <= 1'b0;
-            
+
             mult_div_en_o   <= 1'b0;
             is_csr_o        <= 1'b0;
             csr_addr_o      <= 12'h0;
-            
+
             fp_en_o         <= 1'b0;
             fp_writes_int_o <= 1'b0; // <--- NEW
             fp_load_o       <= 1'b0;
@@ -162,6 +166,7 @@ module id_ex_reg (
             immediate_sel_o <= immediate_sel_i;
             alu_o           <= alu_i;
             lui_o           <= lui_i;
+            auipc_o         <= auipc_i;
             jal_o           <= jal_i;
             jalr_o          <= jalr_i;
             branch_o        <= branch_i;
