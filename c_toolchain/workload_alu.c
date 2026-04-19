@@ -70,3 +70,66 @@ int run_alu_diagnostic() {
     }
     return errors;
 }
+
+int run_fpu_diagnostic() {
+    int errors = 0;
+    print_string("\r\n--- STARTING RV32F FP DIAGNOSTIC ---\r\n");
+    
+    // IEEE-754 numbers as floats
+    volatile float f1, f2, f_rd;
+    volatile int i_rd;
+
+    // FADD
+    f1 = 5.5f; f2 = 2.25f;
+    asm volatile("fadd.s %0, %1, %2" : "=f"(f_rd) : "f"(f1), "f"(f2));
+    if (f_rd != 7.75f) errors++;
+
+    // FSUB
+    f1 = 10.0f; f2 = 3.5f;
+    asm volatile("fsub.s %0, %1, %2" : "=f"(f_rd) : "f"(f1), "f"(f2));
+    if (f_rd != 6.5f) errors++;
+
+    // FMUL
+    f1 = 2.0f; f2 = -3.0f;
+    asm volatile("fmul.s %0, %1, %2" : "=f"(f_rd) : "f"(f1), "f"(f2));
+    if (f_rd != -6.0f) errors++;
+
+    // FDIV
+    f1 = 15.0f; f2 = 3.0f;
+    asm volatile("fdiv.s %0, %1, %2" : "=f"(f_rd) : "f"(f1), "f"(f2));
+    if (f_rd != 5.0f) errors++;
+
+    // FCMP (FEQ)
+    f1 = 7.0f; f2 = 7.0f;
+    asm volatile("feq.s %0, %1, %2" : "=r"(i_rd) : "f"(f1), "f"(f2));
+    if (i_rd != 1) errors++;
+
+    // FCMP (FLT)
+    f1 = 2.0f; f2 = 5.0f;
+    asm volatile("flt.s %0, %1, %2" : "=r"(i_rd) : "f"(f1), "f"(f2));
+    if (i_rd != 1) errors++;
+
+    // FCMP (FLE with negatives)
+    f1 = -4.0f; f2 = -2.0f;
+    asm volatile("fle.s %0, %1, %2" : "=r"(i_rd) : "f"(f1), "f"(f2));
+    if (i_rd != 1) errors++;
+
+    // FCVT.W.S
+    f1 = 12.0f;
+    asm volatile("fcvt.w.s %0, %1, rtz" : "=r"(i_rd) : "f"(f1));
+    if (i_rd != 12) errors++;
+
+    // FCVT.S.W
+    int src_int = -9;
+    asm volatile("fcvt.s.w %0, %1" : "=f"(f_rd) : "r"(src_int));
+    if (f_rd != -9.0f) errors++;
+
+    if (errors == 0) {
+        print_string("RESULT: [PASSED] RV32F FP Edge Cases Validated!\r\n");
+    } else {
+        print_string("RESULT: [FAILED] RV32F Errors: ");
+        print_int(errors);
+        print_string("\r\n");
+    }
+    return errors;
+}

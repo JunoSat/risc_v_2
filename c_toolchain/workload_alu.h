@@ -3,5 +3,6 @@
 
 
 int run_alu_diagnostic();
+int run_fpu_diagnostic();
 
 #endif // WORKLOAD_ALU_H

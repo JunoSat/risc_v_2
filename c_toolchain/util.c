@@ -12,9 +12,12 @@ char get_char() {
 }
 
 void print_char(char c) {
-    // Wait until TX is ready
-    while ((*UART_STATUS & 1) != 0); 
-    *UART_TX_DATA = (int) c;
+    // Wait until TX is ready (Bit 0 of UART_STATUS is 1 when FULL, 0 when READY)
+    while ((*UART_STATUS & 0x01) != 0) {
+        // Optional: Small NOP or volatile read to prevent optimizer interference
+        asm volatile("nop");
+    }
+    *UART_TX_DATA = (int)c;
 }
 
 void print_string(const char* str) {

@@ -162,6 +162,13 @@ void parse_and_execute(char* line) {
 }
 
 int main() {
+    // 0. Robust Power-On Delay (approx 500ms) to sync with terminal.py
+    for (volatile int i = 0; i < 500000; i++) {
+        asm volatile("nop");
+    }
+    
+    // Send Handshake Sync Byte (ASCII SOH) to release Python's mute
+    print_char(0x01);
 
     // 1. Print Startup Banner
     print_string("\r\n==========================================================\r\n");
@@ -170,6 +177,7 @@ int main() {
 
     // 2. RUN AUTOMATED HARDWARE TESTS
     int errors = run_alu_diagnostic();
+    errors += run_fpu_diagnostic();
     
     // 3. Print the Results
     print_string("\r\nDiagnostic Complete. Total Errors: ");
