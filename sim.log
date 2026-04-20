@@ -1,0 +1,273 @@
+WARNING: memory.v:21: $readmemh(imem.hex): Not enough words in the file for the requested range [0:2047].
+WARNING: memory.v:61: $readmemh(dmem.hex): Not enough words in the file for the requested range [0:2047].
+[tb_soc_run] Starting simulation
+[T=790000] uart_tx store #1 data=0x0d pc_ex=00000b6c
+[T=1010000] uart_tx store #2 data=0x0a pc_ex=00000b6c
+[T=1230000] uart_tx store #3 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001043
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=00001044
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[T=1450000] uart_tx store #4 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001044
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=00001045
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[T=1670000] uart_tx store #5 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001045
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=00001046
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[T=1890000] uart_tx store #6 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001046
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=00001047
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[T=2110000] uart_tx store #7 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001047
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=00001048
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[T=2330000] uart_tx store #8 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001048
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=00001049
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[T=2550000] uart_tx store #9 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001049
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=0000104a
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[T=2770000] uart_tx store #10 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=0000104a
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=0000104b
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+<85>[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[T=2990000] uart_tx store #11 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=0000104b
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=0000104c
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[T=3210000] uart_tx store #12 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=0000104c
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=0000104d
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[T=3430000] uart_tx store #13 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=0000104d
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=0000104e
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[T=3650000] uart_tx store #14 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=0000104e
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=0000104f
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[T=3870000] uart_tx store #15 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=0000104f
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=00001050
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[T=4090000] uart_tx store #16 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001050
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=00001051
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[T=4310000] uart_tx store #17 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001051
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=00001052
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[T=4530000] uart_tx store #18 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001052
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=00001053
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[T=4750000] uart_tx store #19 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001053
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=00001054
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[T=4970000] uart_tx store #20 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001054
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b58 if_id_inst=00000013 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000025
+[cy] pc_if=00000b5c if_id_inst=00150513 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+<85>[cy] pc_if=00000b60 if_id_inst=00072783 pc_ex=00000b58 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000b5c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=00001055
+[cy] pc_if=00000b64 if_id_inst=0017f793 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=80000008
+[cy] pc_if=00000b68 if_id_inst=fe079ce3 pc_ex=00000b60 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b6c if_id_inst=00d62023 pc_ex=00000b64 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[cy] pc_if=00000b70 if_id_inst=00054683 pc_ex=00000b68 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=1 dmem_raddr=fffffff8
+[T=5190000] uart_tx store #21 data=0x3d pc_ex=00000b6c
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000b6c stall_if=1 stall_id=1 stall_ex=0 flush_if=0 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=1 mem_wr=0 dmem_raddr=80000000
+[cy] pc_if=00000b74 if_id_inst=fe0694e3 pc_ex=00000000 stall_if=0 stall_id=0 stall_ex=0 flush_if=0 flush_id=0 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00001055
+[cy] pc_if=00000b78 if_id_inst=00008067 pc_ex=00000b70 stall_if=0 stall_id=0 stall_ex=0 flush_if=1 flush_id=1 flush_ex=0 stall_exreq=0 fp_en=0 mult_en=0 mem_rd=0 mem_wr=0 dmem_raddr=00000000
+[T=5410000] uart_tx store #22 data=0x3d pc_ex=00000b6c
+[T=5630000] uart_tx store #23 data=0x3d pc_ex=00000b6c
+[T=5850000] uart_tx store #24 data=0x3d pc_ex=00000b6c
+[T=6070000] uart_tx store #25 data=0x3d pc_ex=00000b6c
+[T=6290000] uart_tx store #26 data=0x3d pc_ex=00000b6c
+[T=6510000] uart_tx store #27 data=0x3d pc_ex=00000b6c
+[T=6730000] uart_tx store #28 data=0x3d pc_ex=00000b6c
+[T=6950000] uart_tx store #29 data=0x3d pc_ex=00000b6c
+[T=7170000] uart_tx store #30 data=0x3d pc_ex=00000b6c
+<a7>[T=7390000] uart_tx store #31 data=0x3d pc_ex=00000b6c
+[T=7610000] uart_tx store #32 data=0x3d pc_ex=00000b6c
+[T=7830000] uart_tx store #33 data=0x3d pc_ex=00000b6c
+[T=8050000] uart_tx store #34 data=0x3d pc_ex=00000b6c
+[T=8270000] uart_tx store #35 data=0x3d pc_ex=00000b6c
+[T=8490000] uart_tx store #36 data=0x3d pc_ex=00000b6c
+[T=8710000] uart_tx store #37 data=0x3d pc_ex=00000b6c
+[T=8930000] uart_tx store #38 data=0x3d pc_ex=00000b6c
+[T=9150000] uart_tx store #39 data=0x3d pc_ex=00000b6c
+[T=9370000] uart_tx store #40 data=0x3d pc_ex=00000b6c
+[T=9590000] uart_tx store #41 data=0x3d pc_ex=00000b6c
+[T=9810000] uart_tx store #42 data=0x3d pc_ex=00000b6c
+[T=10030000] uart_tx store #43 data=0x3d pc_ex=00000b6c
+[T=10250000] uart_tx store #44 data=0x3d pc_ex=00000b6c
+<fa>[T=10470000] uart_tx store #45 data=0x3d pc_ex=00000b6c
+[T=10690000] uart_tx store #46 data=0x3d pc_ex=00000b6c
+[T=10910000] uart_tx store #47 data=0x3d pc_ex=00000b6c
+[T=11130000] uart_tx store #48 data=0x3d pc_ex=00000b6c
+[T=11350000] uart_tx store #49 data=0x3d pc_ex=00000b6c
+[T=11570000] uart_tx store #50 data=0x3d pc_ex=00000b6c
+[T=11790000] uart_tx store #51 data=0x3d pc_ex=00000b6c
+[T=12010000] uart_tx store #52 data=0x3d pc_ex=00000b6c
+[T=12230000] uart_tx store #53 data=0x3d pc_ex=00000b6c
+[T=12450000] uart_tx store #54 data=0x3d pc_ex=00000b6c
+<f5>[T=12670000] uart_tx store #55 data=0x3d pc_ex=00000b6c
+[T=12890000] uart_tx store #56 data=0x3d pc_ex=00000b6c
+[T=13110000] uart_tx store #57 data=0x3d pc_ex=00000b6c
+[T=13330000] uart_tx store #58 data=0x3d pc_ex=00000b6c
+[T=13550000] uart_tx store #59 data=0x3d pc_ex=00000b6c
+u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5><15><82><90>HH $<14><12>
+<09><09><82><81><89><a8>,
+<89><15><95><81><af>(R<0c>I<fa><f5><a5>A<ab><a9><aa><ad><ca>:U<05><82><81>A<90><90>HH $<14><12>
+<09><09><82><81><15><82><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5><15><82>#Q<d9><ba><81><ad><ac>(<12>-<ea>u<05>
+<91><ad><90>KH<92>m<c2>5A<a4><aa><a8><cc><fa>5<a5><95><a3><90><a3><d9>:)<15><82><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<85><85><13><1a>%%<ad><a1><a9>)<a4><0c><15><85><a8><aa><aa><ea><d5><05>R<a9><a1><a8>H*J%<a9><a3>)*<ad><8a><da><a4><e4><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d>#Q:<15><a5><ad><a5><90><d0>K<c5><9a><90>IM<a0><e9><82>5<c5><bc><b4>I<95><e9><95><a1><ae><a9>%<e9><b7><90>S<a8><8f>KA<a5><bb>([<c5><bc>)<ce><d9><a4><04><c1><be>(;<d5><b6><0e><09><95><dd><b7><b9><a8><0b>
+<dd><bd><b7>Z)<16>R<ce>KA<aa><a9>V<af><9b><d9><b7><97>O<d9><a4>dR:)u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa>5<19><ab><a4>(<12><ec><05><a9><a5><90>)<ab>P<0c><a5><95><a7><a7>/$M<05><a1><90>*J%<a9><a3>)*<ad><8a><da><a4><e4><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d>#Q:<15><a5><ad><a5><90><d0>K<c5><9a><90>IM<a0><e9><82>5<c5><bc><b4>I<95><e9><95><a1><ae><a9>%<e9><b7><90>S<a8><8f>KA<a5><bb>([<c5><bc>)<ce><d9><a4><04><c1><be>(;<d5><b6><0e><09><95><dd><b7><b9><a8><0b>
+<dd><bd><b7>Z)<16>R<ce>KA<aa><a9>V<af><9b><d9><b7><97>O<d9><a4>dR:)u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa>5<19><ab><a4>(<12><ec><05><a9><a5><90>)<ab>P<0c><a5><95><a7><a7>/$M<05><a1><90>*J%<a9><a3>)*<ad><8a><da><a4><e4><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d>#Q:<15><a5><ad><a5><90><d0>K<c5><9a><90>IM<a0><e9><82>5<c5><bc><b4>I<95><e9><95><a1><ae><a9>%<e9><b7><90>S<a8><8f>KA<a5><bb>([<c5><bc>)<ce><d9><a4><04><c1><be>(;<d5><b6><0e><09><95><dd><b7><b9><a8><0b>
+<dd><bd><b7>Z)<16>R<ce>KA<aa><a9>V<af><9b><d9><b7><97>O<d9><a4>dRB<85><ab>-J<d5><82>m<89><a1>*ZE<e5>A<a5><b9>Y+<ed><90><a2>)<af>kK<c5><b4><9d>HM#Q<a8>DE<c5><b7><b7>;<e1><b1><14><d2><ec><db><e1><b4>)<af><cb><09>R<dd><bc>(<0b><1a><e9><ba>+<ed><9a><90>J#Q<a8><d4>T<ea><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa>5<19><90><90>H<92>m<c2>%<95><a6><90>T(<12><ec><05><a9><a5><90>P<14>:Ue<85><ac>*<05>:<99><a4>*Z<d5>T<ea><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa><f5>u<9d><a7><fa>5<19><ac>.<ae><0e><e9><89><c5><b4><b8>
+<c9><fb><e9><90>*;<e1><ba><ad><14>/<fb><d9><bb><97>#<d1>V<8e>;y<90>
+[tb_soc_run] Timeout reached. bytes_seen=991 stores=1152
+tb_soc_run.v:273: $finish called at 5001230000 (1ps)

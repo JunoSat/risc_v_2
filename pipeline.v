@@ -1,5 +1,8 @@
 `timescale 1ns/1ps
 // Stage files and hazard unit are compiled natively via Vivado workspace.
+// change is getting reflected
+// hi
+
 
 module pipe #(
 	parameter [31:0] RESET = 32'h0000_0000
@@ -75,6 +78,7 @@ module pipe #(
     wire        id_immediate_sel;
     wire        id_alu;
     wire        id_lui;
+    wire        id_auipc;
     wire        id_jal;
     wire        id_jalr;
     wire        id_branch;
@@ -91,6 +95,14 @@ module pipe #(
     wire [31:0] id_reg_rdata1;
     wire [31:0] id_reg_rdata2;
 
+    // RV32F ID signals
+    wire        id_fp_en;
+    wire        id_fp_load;
+    wire        id_fp_store;
+    wire [4:0]  id_fp_funct5;
+    wire [31:0] id_fp_rdata1;
+    wire [31:0] id_fp_rdata2;
+
     // EX Wires
     wire [31:0] ex_pc;
     wire [31:0] ex_immediate;
@@ -103,6 +115,7 @@ module pipe #(
     wire        ex_immediate_sel;
     wire        ex_alu;
     wire        ex_lui;
+    wire        ex_auipc;
     wire        ex_jal;
     wire        ex_jalr;
     wire        ex_branch;
@@ -111,6 +124,15 @@ module pipe #(
     wire        ex_mem_to_reg;
     wire        ex_arithsubtype;
     wire        ex_illegal_inst;
+    
+    // RV32F EX signals
+    wire        ex_fp_en;
+    wire        ex_fp_load;
+    wire        ex_fp_store;
+    wire [4:0]  ex_fp_funct5;
+    wire [31:0] ex_fp_rdata1;
+    wire [31:0] ex_fp_rdata2;
+
     
     // Internal EX -> EX/MEM Reg
     wire [31:0] ex_result_calc;
@@ -125,6 +147,8 @@ module pipe #(
     wire        mem_mem_read;
     wire        mem_mem_to_reg;
     wire        mem_alu_to_reg;
+    
+    wire        mem_fp_reg_write;
 
     // WB Wires
     wire [31:0] wb_ex_result;
@@ -135,30 +159,69 @@ module pipe #(
     wire [1:0]  wb_mem_read_offset;
     wire [31:0] wb_result;
 
-    assign exception = wb_result === 32'hx && ex_illegal_inst; // Optional assignment
+    wire        wb_fp_reg_write;
+
+    // Trap & Exception Logic
+    wire        ex_exception;
+    wire [31:0] exception_vector;
+    
+    // Unused optional signal
+    assign exception = wb_result === 32'hx && ex_illegal_inst;
 
     // ----------------------------------------------------
     // Internal RegFile Forwarding (Read in ID)
     // ----------------------------------------------------
+    // ----------------------------------------------------
+    // Internal RegFile Forwarding (Read in ID)
+    // ----------------------------------------------------
     assign id_reg_rdata1 = (id_rs1 == 5'd0) ? 32'b0 :
-                           (wb_alu_to_reg && (wb_rd == id_rs1)) ? wb_result :
+                           (wb_alu_to_reg && !wb_fp_reg_write && (wb_rd == id_rs1)) ? wb_result :
                            regs[id_rs1];
 
     assign id_reg_rdata2 = (id_rs2 == 5'd0) ? 32'b0 :
-                           (wb_alu_to_reg && (wb_rd == id_rs2)) ? wb_result :
+                           (wb_alu_to_reg && !wb_fp_reg_write && (wb_rd == id_rs2)) ? wb_result :
                            regs[id_rs2];
+
+    wire [31:0] fp_regs_rdata1;
+    wire [31:0] fp_regs_rdata2;
+
+    wire        id_fp_writes_int;
+    wire        ex_fp_writes_int;
+
+    assign id_fp_rdata1  = (wb_fp_reg_write && (wb_rd == id_rs1)) ? wb_result : fp_regs_rdata1;
+    assign id_fp_rdata2  = (wb_fp_reg_write && (wb_rd == id_rs2)) ? wb_result : fp_regs_rdata2;
+
+    fp_regfile u_fp_regfile (
+        .clk    (clk),
+        .reset  (reset),
+        .raddr1 (id_rs1),
+        .rdata1 (fp_regs_rdata1),
+        .raddr2 (id_rs2),
+        .rdata2 (fp_regs_rdata2),
+        .we     (wb_fp_reg_write && !stall),
+        .waddr  (wb_rd),
+        .wdata  (wb_result)
+    );
 
     // ----------------------------------------------------
     // RegFile Write
     // ----------------------------------------------------
     integer i;
-    always @(posedge clk or negedge reset) begin
+    always @(posedge clk) begin
         if (!reset) begin
             for (i=1; i<32; i=i+1) regs[i] <= 32'b0;
-        end else if (wb_alu_to_reg && wb_rd != 5'd0 && !stall) begin
+        end else if (wb_alu_to_reg && !wb_fp_reg_write && wb_rd != 5'd0 && !stall) begin
             regs[wb_rd] <= wb_result;
         end
     end
+
+
+    // In pipeline.v, modify the EX writeback logic:
+    // An instruction writes to FP reg if it's an FP op AND it doesn't target an INT reg.
+    wire ex_fp_reg_write = (ex_fp_en && !ex_fp_writes_int) | ex_fp_load;
+    
+    // An instruction writes to INT reg if it's standard ALU, OR if it's an FP op targeting INT.
+    wire ex_alu_to_reg = (ex_alu | ex_lui | ex_auipc | ex_jal | ex_jalr | ex_mem_to_reg | ex_is_csr | ex_mult_div_en | ex_fp_writes_int);
 
     // ----------------------------------------------------
     // Modules
@@ -171,6 +234,9 @@ module pipe #(
         .id_ex_rd         (ex_rd),
         .if_id_rs1        (id_rs1),
         .if_id_rs2        (id_rs2),
+
+        .ex_mem_is_fp     (mem_fp_reg_write), // <--- ADD THIS
+        .mem_wb_is_fp     (wb_fp_reg_write),  // <--- ADD THIS
         
         .ex_mem_reg_write (mem_alu_to_reg),
         .ex_mem_rd        (mem_rd),
@@ -179,6 +245,7 @@ module pipe #(
         
         .branch_taken     (branch_taken),
         .stall_ex_request (stall_ex_request),
+        .exception_trigger(ex_exception),
         
         .stall_if         (stall_if_haz),
         .stall_id         (stall_id_haz),
@@ -194,6 +261,7 @@ module pipe #(
     // ----------------------------------------------------
     // CSR File
     // ----------------------------------------------------
+
     csr_file u_csr_file (
         .clk              (clk),
         .reset            (reset),
@@ -205,10 +273,11 @@ module pipe #(
         .csr_waddr        (wb_csr_addr),
         .csr_wdata        (wb_csr_wdata),
         
-        .exception_trigger(1'b0),
-        .exception_cause  (32'b0),
-        .exception_pc     (32'b0),
-        .exception_vector ()
+        // Fix: Use the generic ex_exception wire to trigger Cause 24 (Div-by-Zero)
+        .exception_trigger(ex_exception),
+        .exception_cause  (ex_exception ? 32'd24 : 32'b0), 
+        .exception_pc     (ex_pc),
+        .exception_vector (exception_vector)
     );
 
     if_stage #( .RESET_PC(RESET) ) u_if_stage (
@@ -217,6 +286,8 @@ module pipe #(
         .stall            (stage_stall_if),
         .branch_taken     (branch_taken),
         .branch_target    (branch_target),
+        .exception_trigger(ex_exception),
+        .exception_vector (exception_vector),
         .inst_mem_address (inst_mem_address),
         .inst_mem_is_ready(inst_mem_is_ready),
         .pc_o             (if_pc_out)
@@ -231,7 +302,8 @@ module pipe #(
         .inst_mem_read_data(inst_mem_read_data),
         .inst_mem_is_valid (inst_mem_is_valid),
         .id_pc             (id_pc),
-        .id_instruction    (id_inst)
+        .id_instruction    (id_inst),
+        .id_valid          ()  // unused; reg is internal, NOP-gating already handled
     );
 
     id_stage u_id_stage (
@@ -240,6 +312,7 @@ module pipe #(
         .immediate_sel (id_immediate_sel),
         .alu           (id_alu),
         .lui           (id_lui),
+        .auipc         (id_auipc),
         .jal           (id_jal),
         .jalr          (id_jalr),
         .branch        (id_branch),
@@ -254,13 +327,18 @@ module pipe #(
         .illegal_inst  (id_illegal_inst),
         .mult_div_en   (id_mult_div_en),
         .is_csr        (id_is_csr),
-        .csr_addr      (id_csr_addr)
-    );
+        .csr_addr      (id_csr_addr),
+        .fp_en         (id_fp_en),
+        .fp_load       (id_fp_load),
+        .fp_store      (id_fp_store),
+        .fp_funct5     (id_fp_funct5),
+        .fp_writes_int (id_fp_writes_int) // <--- Connect the new output from ID
+       );
 
     id_ex_reg u_id_ex_reg (
         .clk             (clk),
         .reset           (reset),
-        .stall           (stage_stall_ex),
+        .stall           (stage_stall_id),
         .flush           (flush_id_haz),
         
         .pc_i            (id_pc),
@@ -275,6 +353,7 @@ module pipe #(
         .immediate_sel_i (id_immediate_sel),
         .alu_i           (id_alu),
         .lui_i           (id_lui),
+        .auipc_i         (id_auipc),
         .jal_i           (id_jal),
         .jalr_i          (id_jalr),
         .branch_i        (id_branch),
@@ -287,6 +366,13 @@ module pipe #(
         .mult_div_en_i   (id_mult_div_en),
         .is_csr_i        (id_is_csr),
         .csr_addr_i      (id_csr_addr),
+        
+        .fp_en_i         (id_fp_en),
+        .fp_load_i       (id_fp_load),
+        .fp_store_i      (id_fp_store),
+        .fp_funct5_i     (id_fp_funct5),
+        .fp_rdata1_i     (id_fp_rdata1),
+        .fp_rdata2_i     (id_fp_rdata2),
 
         .pc_o            (ex_pc),
         .immediate_o     (ex_immediate),
@@ -300,6 +386,7 @@ module pipe #(
         .immediate_sel_o (ex_immediate_sel),
         .alu_o           (ex_alu),
         .lui_o           (ex_lui),
+        .auipc_o         (ex_auipc),
         .jal_o           (ex_jal),
         .jalr_o          (ex_jalr),
         .branch_o        (ex_branch),
@@ -311,7 +398,17 @@ module pipe #(
         
         .mult_div_en_o   (ex_mult_div_en),
         .is_csr_o        (ex_is_csr),
-        .csr_addr_o      (ex_csr_addr)
+        .csr_addr_o      (ex_csr_addr),
+        
+        .fp_en_o         (ex_fp_en),
+        .fp_load_o       (ex_fp_load),
+        .fp_store_o      (ex_fp_store),
+        .fp_funct5_o     (ex_fp_funct5),
+        .fp_rdata1_o     (ex_fp_rdata1),
+        .fp_rdata2_o     (ex_fp_rdata2),
+
+        .fp_writes_int_i (id_fp_writes_int), // <--- Input to reg
+        .fp_writes_int_o (ex_fp_writes_int) // <--- Output from reg
     );
 
     ex_stage u_ex_stage (
@@ -326,15 +423,25 @@ module pipe #(
         .immediate_sel_i    (ex_immediate_sel),
         .alu_i              (ex_alu),
         .lui_i              (ex_lui),
+        .auipc_i            (ex_auipc),
         .jal_i              (ex_jal),
         .jalr_i             (ex_jalr),
         .branch_i           (ex_branch),
         .arithsubtype_i     (ex_arithsubtype),
         
+        .rs2_sel_i          (ex_rs2),
+        
         .mult_div_en_i      (ex_mult_div_en),
         .is_csr_i           (ex_is_csr),
         .csr_addr_i         (ex_csr_addr),
         .csr_rdata_i        (csr_rdata),
+        
+        .fp_en_i            (ex_fp_en),
+        .fp_load_i          (ex_fp_load),
+        .fp_store_i         (ex_fp_store),
+        .fp_funct5_i        (ex_fp_funct5),
+        .fp_rdata1_i        (ex_fp_rdata1),
+        .fp_rdata2_i        (ex_fp_rdata2),
         
         // Forwarding
         .forward_a          (forward_a_sel),
@@ -348,11 +455,12 @@ module pipe #(
         .branch_target      (branch_target),
         
         .stall_ex_request   (stall_ex_request),
+        .ex_exception       (ex_exception),
         .csr_we             (ex_csr_we),
         .csr_wdata          (ex_csr_wdata)
     );
 
-    wire ex_alu_to_reg = (ex_alu | ex_lui | ex_jal | ex_jalr | ex_mem_to_reg | ex_is_csr | ex_mult_div_en);
+   
 
     ex_mem_reg u_ex_mem_reg (
         .clk            (clk),
@@ -366,12 +474,14 @@ module pipe #(
         .mem_read_i     (ex_mem_read && !stall),
         .mem_to_reg_i   (ex_mem_to_reg),
         .alu_to_reg_i   (ex_alu_to_reg),
-        .stall          (stall | stall_ex_haz),
+        .stall          (stage_stall_ex),
         .flush          (stage_flush_ex),
         
         .csr_we_i       (ex_csr_we),
         .csr_wdata_i    (ex_csr_wdata),
         .csr_addr_i     (ex_csr_addr),
+        
+        .fp_reg_write_i (ex_fp_reg_write),
 
         .ex_result_o    (mem_ex_result),
         .write_data_o   (mem_write_data),
@@ -384,7 +494,9 @@ module pipe #(
         
         .csr_we_o       (mem_csr_we),
         .csr_wdata_o    (mem_csr_wdata),
-        .csr_addr_o     (mem_csr_addr)
+        .csr_addr_o     (mem_csr_addr),
+        
+        .fp_reg_write_o (mem_fp_reg_write)
     );
 
     mem_stage u_mem_stage (
@@ -418,6 +530,8 @@ module pipe #(
         .csr_we_i                  (mem_csr_we),
         .csr_wdata_i               (mem_csr_wdata),
         .csr_addr_i                (mem_csr_addr),
+        
+        .fp_reg_write_i            (mem_fp_reg_write),
 
         .ex_result_o               (wb_ex_result),
         .dest_reg_sel_o            (wb_rd),
@@ -428,7 +542,9 @@ module pipe #(
         
         .csr_we_o                  (wb_csr_we),
         .csr_wdata_o               (wb_csr_wdata),
-        .csr_addr_o                (wb_csr_addr)
+        .csr_addr_o                (wb_csr_addr),
+        
+        .fp_reg_write_o            (wb_fp_reg_write)
     );
 
     wb_stage u_wb_stage (
@@ -440,5 +556,7 @@ module pipe #(
         
         .wb_result_o               (wb_result)
     );
+
+    // Removed duplicate assignments and redundant fpu_cvt/cmp instantiations.
 
 endmodule

@@ -11,7 +11,8 @@ module mult_div (
     
     output reg  [31:0] result,
     output wire        ready,     // High when calculation is complete. Held until start is deasserted.
-    output wire        busy       // High while calculation is running
+    output wire        busy,      // High while calculation is running
+    output reg         div_zero_fault // High if division by zero occurs
 );
 
     localparam STATE_IDLE = 2'b00;
@@ -83,10 +84,12 @@ module mult_div (
             divisor <= 32'h0;
             out_sign <= 1'b0;
             rem_sign <= 1'b0;
+            div_zero_fault <= 1'b0;
         end
         else begin
             case (state)
                 STATE_IDLE: begin
+                    div_zero_fault <= 1'b0;
                     if (start) begin
                         counter <= 6'd32;
                         
@@ -118,6 +121,7 @@ module mult_div (
                                 
                                 if (rs2_data == 0) begin
                                     // Divide by zero fault
+                                    div_zero_fault <= 1'b1;
                                     result <= is_rem ? rs1_data : 32'hFFFF_FFFF;
                                     state  <= STATE_DONE;
                                 end else begin
@@ -130,6 +134,7 @@ module mult_div (
                                 
                                 if (rs2_data == 0) begin
                                     // Divide by zero fault
+                                    div_zero_fault <= 1'b1;
                                     result <= is_rem ? rs1_data : 32'hFFFF_FFFF;
                                     state  <= STATE_DONE;
                                 end else begin

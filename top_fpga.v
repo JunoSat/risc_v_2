@@ -1,8 +1,9 @@
 `timescale 1ns / 1ps
 
 module top_fpga #(
-	parameter IMEMSIZE = 4096,
-	parameter DMEMSIZE = 4096
+	parameter IMEMSIZE = 8192,
+	parameter DMEMSIZE = 8192,
+	parameter BAUD_RATE = 115200
 )(
 	input  wire clk,    	// fast board clock (e.g. 100 MHz)
 	input  wire reset,  	// active-low reset
@@ -13,6 +14,29 @@ module top_fpga #(
 
 	wire [31:0] current_pc;
 	wire exception;
+
+	// Declare bootloader control nets up front so later logic (uart_rx_ack
+	// in particular) can reference cpu_reset without triggering a
+	// "used-before-declaration" Synth 8-6901 warning.
+	wire        cpu_reset;
+	wire        boot_we;
+	wire [31:0] boot_addr;
+	wire [31:0] boot_wdata;
+
+    // --- CLOCK DIVIDER TO 50MHz ---
+    // Safely resolves the -1.765ns Setup Timing Violation on the long 
+    // Is_uart_read_r -> mem_read_data -> FW -> EX -> Branch -> Flush -> Pipeline_CE path.
+    reg clk_50 = 0;
+    always @(posedge clk or negedge reset) begin
+        if (!reset) clk_50 <= 1'b0;
+        else clk_50 <= ~clk_50;
+    end
+    
+    wire cpu_clk;
+    BUFG bufg_inst (
+        .I(clk_50),
+        .O(cpu_clk)
+    );
 
 	////////////////////////////////////////////////////////////
 	// PIPE ↔ MEMORY WIRES
@@ -51,13 +75,25 @@ module top_fpga #(
     wire uart_tx_start = uart_we && (dmem_write_address[7:0] == 8'h00);
     
     // Read registers (0x8000_0004 = RX Data fetch)
-    wire uart_rx_ack = uart_re && (dmem_read_address[7:0] == 8'h04);
+    wire uart_rx_ack = (!cpu_reset) ? uart_rx_ready : (uart_re && (dmem_read_address[7:0] == 8'h04));
     
-    // Read Multiplexer (Routes UART Status/Data back to Pipeline safely, otherwise maps BRAM)
-    assign dmem_read_data_pipe = (dmem_read_address[31:28] == 4'h8) ? 
-                                 ((dmem_read_address[7:0] == 8'h08) ? {30'b0, uart_rx_ready, uart_tx_full} : 
-                                  (dmem_read_address[7:0] == 8'h04) ? {24'b0, uart_rx_data} : 32'h0) 
-                                 : dmem_read_data_bram;
+    // Read Multiplexer (Synchronized to exactly match BRAM's 1-cycle latency)
+    reg [31:0] uart_read_data_r;
+    reg        is_uart_read_r;
+    
+    always @(posedge cpu_clk) begin
+        // Carry the UART-read state into the Write-Back stage cycle
+        is_uart_read_r <= uart_re;
+        
+        // Sample the UART Hardware wires dynamically exactly when a Read is requested
+        if (uart_re) begin
+            uart_read_data_r <= (dmem_read_address[7:0] == 8'h08) ? {30'b0, uart_rx_ready, uart_tx_full} : 
+                                (dmem_read_address[7:0] == 8'h04) ? {24'b0, uart_rx_data} : 32'h0;
+        end
+    end
+    
+    // During the pipeline WB stage, output either the safely latched UART data, or native BRAM data.
+    assign dmem_read_data_pipe = is_uart_read_r ? uart_read_data_r : dmem_read_data_bram;
 
     // LED mappings! Top 8 bits = Most recently received character. Bottom 8 bits = Current PC.
     reg [7:0] led_upper;
@@ -71,10 +107,10 @@ module top_fpga #(
 	// UART CONTROLLER INTERFACING
 	////////////////////////////////////////////////////////////
     uart #(
-        .CLK_FREQ(100_000_000),
-        .BAUD_RATE(115200)
+        .CLK_FREQ(50_000_000),
+        .BAUD_RATE(BAUD_RATE)
     ) UART_INST (
-        .clk        (clk),
+        .clk        (cpu_clk),
         .reset      (reset),
         .rx         (uart_rx),
         .tx         (uart_tx),
@@ -87,11 +123,25 @@ module top_fpga #(
     );
 
 	////////////////////////////////////////////////////////////
+	// HARDWARE BOOTLOADER
+	////////////////////////////////////////////////////////////
+	bootloader boot_inst (
+		.clk(cpu_clk),
+		.reset(reset),
+		.uart_rx_ready(uart_rx_ready),
+		.uart_rx_data(uart_rx_data),
+		.cpu_reset(cpu_reset),
+		.boot_we(boot_we),
+		.boot_addr(boot_addr),
+		.boot_wdata(boot_wdata)
+	);
+
+	////////////////////////////////////////////////////////////
 	// PIPELINE CPU
 	////////////////////////////////////////////////////////////
 	pipe pipe_u (
-		.clk               (clk), // Now properly running 100MHz!
-		.reset             (reset),
+		.clk               (cpu_clk), // Now properly running 50MHz to easily clear timing bounds!
+		.reset             (cpu_reset),
 		.stall             (1'b0),
 		.exception         (exception),
 		.pc_out            (current_pc), 
@@ -119,25 +169,35 @@ module top_fpga #(
 	instr_mem IMEM (
 		.clk  (clk),
 		.pc   (inst_mem_address),
-		.instr(inst_mem_read_data)
+		.instr(inst_mem_read_data),
+		.boot_we(boot_we),
+		.boot_addr(boot_addr),
+		.boot_wdata(boot_wdata)
 	);
 
 
-	////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
 	// DATA MEMORY
 	////////////////////////////////////////////////////////////
-	// Prevent BRAM memory-corruption if the pipeline accidentally writes to a UART address
-    wire bram_we = dmem_write_ready && !is_uart_addr;
+    // Bootloader also mirrors every payload word into DMEM so that .rodata /
+    // .data living past the .text segment is coherent with the freshly loaded
+    // program. Without this, DMEM keeps whatever was baked into the bitstream
+    // via $readmemh and the CPU reads garbage for every string / constant.
+    // The CPU is held in reset while boot_we pulses, so the two producers of
+    // these write signals are mutually exclusive.
+    wire bram_we           = boot_we || (dmem_write_ready && !is_uart_addr);
+    wire [31:0] bram_waddr = boot_we ? boot_addr  : dmem_write_address;
+    wire [31:0] bram_wdata = boot_we ? boot_wdata : dmem_write_data;
+    wire [3:0]  bram_wstrb = boot_we ? 4'b1111    : dmem_write_byte;
 
 	data_mem DMEM (
-		.clk   (clk),
+		.clk   (cpu_clk), // DMEM stays at 50MHz to match pipeline
 		.re    (dmem_read_ready && !is_uart_addr), 
 		.raddr (dmem_read_address),
-		.rdata (dmem_read_data_bram), // Native BRAM output wire
+		.rdata (dmem_read_data_bram), 
 		.we    (bram_we),
-		.waddr (dmem_write_address),
-		.wdata (dmem_write_data),
-		.wstrb (dmem_write_byte)
+		.waddr (bram_waddr),
+		.wdata (bram_wdata),
+		.wstrb (bram_wstrb)
 	);
-
 endmodule

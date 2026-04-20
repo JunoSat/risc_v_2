@@ -27,3 +27,4 @@ with open(vcd_path, 'r') as f:
                 state[id_to_var[parts[1]]] = val
         if time == 760000 and line.startswith('#'):
             print(f"Time {time}: id_instruction = {hex(int(state['id_instruction'],2))}")
+            sys.exit(0)

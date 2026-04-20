@@ -24,6 +24,9 @@ module ex_mem_reg (
     input  wire [31:0] csr_wdata_i,
     input  wire [11:0] csr_addr_i,
 
+    // RV32F
+    input  wire        fp_reg_write_i,
+
     // Outputs
     output reg  [31:0] ex_result_o,
     output reg  [31:0] write_data_o,
@@ -36,10 +39,13 @@ module ex_mem_reg (
     
     output reg         csr_we_o,
     output reg  [31:0] csr_wdata_o,
-    output reg  [11:0] csr_addr_o
+    output reg  [11:0] csr_addr_o,
+    
+    // RV32F
+    output reg         fp_reg_write_o
 );
 
-    always @(posedge clk or negedge reset) begin
+    always @(posedge clk ) begin
         if (!reset) begin
             ex_result_o    <= 32'h0;
             write_data_o   <= 32'h0;
@@ -53,6 +59,7 @@ module ex_mem_reg (
             csr_we_o       <= 1'b0;
             csr_wdata_o    <= 32'h0;
             csr_addr_o     <= 12'h0;
+            fp_reg_write_o <= 1'b0;
         end
         else if (flush) begin
             ex_result_o    <= 32'h0;
@@ -67,6 +74,7 @@ module ex_mem_reg (
             csr_we_o       <= 1'b0;
             csr_wdata_o    <= 32'h0;
             csr_addr_o     <= 12'h0;
+            fp_reg_write_o <= 1'b0;
         end
         else if (!stall) begin
             ex_result_o    <= ex_result_i;
@@ -81,6 +89,7 @@ module ex_mem_reg (
             csr_we_o       <= csr_we_i;
             csr_wdata_o    <= csr_wdata_i;
             csr_addr_o     <= csr_addr_i;
+            fp_reg_write_o <= fp_reg_write_i;
         end
     end
 

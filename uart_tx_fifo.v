@@ -35,33 +35,34 @@ module uart_tx_fifo #(
     assign empty = (write_ptr == read_ptr);
     assign full  = (write_ptr[ADDR_WIDTH] != read_ptr[ADDR_WIDTH]) && 
                    (write_ptr[ADDR_WIDTH-1:0] == read_ptr[ADDR_WIDTH-1:0]);
+
+    initial begin
+        if ((DEPTH & (DEPTH - 1)) != 0) begin
+            $display("ERROR: uart_tx_fifo DEPTH must be a power of 2.");
+            $finish;
+        end
+    end
                    
     // Write Logic
-    always @(posedge clk or negedge reset) begin
+    always @(posedge clk) begin
         if (!reset) begin
             write_ptr <= 0;
+            read_ptr <= 0;
         end else begin
             if (write_en && !full) begin
                 memory[write_ptr[ADDR_WIDTH-1:0]] <= write_data;
                 write_ptr <= write_ptr + 1;
             end
-        end
-    end
-    
-    // Read Logic
-    // We want a first-word fall-through (FWFT) kind of logic or simple output.
-    // Since read_data needs to be available immediately when !empty, we can do 
-    // continuous assignment for the read data based on read_ptr.
-    assign read_data = memory[read_ptr[ADDR_WIDTH-1:0]];
-
-    always @(posedge clk or negedge reset) begin
-        if (!reset) begin
-            read_ptr <= 0;
-        end else begin
             if (read_en && !empty) begin
                 read_ptr <= read_ptr + 1;
             end
         end
     end
+
+    // Read Logic
+    // We want a first-word fall-through (FWFT) kind of logic or simple output.
+    // Since read_data needs to be available immediately when !empty, we can do 
+    // continuous assignment for the read data based on read_ptr.
+    assign read_data = memory[read_ptr[ADDR_WIDTH-1:0]];
 
 endmodule

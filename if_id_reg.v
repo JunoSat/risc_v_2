@@ -24,7 +24,7 @@ module if_id_reg (
     reg [31:0] inst_hold;
     reg        stall_prev;
 
-    always @(posedge clk or negedge reset) begin
+    always @(posedge clk) begin
         if (!reset) begin
             stall_prev <= 1'b0;
             inst_hold  <= NOP_INSTR;
@@ -43,7 +43,7 @@ module if_id_reg (
                             (use_hold)  ? inst_hold :
                             (inst_mem_is_valid) ? inst_mem_read_data : NOP_INSTR;
 
-    always @(posedge clk or negedge reset) begin
+    always @(posedge clk) begin
         if (!reset) begin
             id_pc    <= 32'h0;
             id_valid <= 1'b0;

@@ -2,24 +2,36 @@
 module instr_mem (
 	input  wire    	clk,
 	input  wire [31:0] pc, 	// byte address
-	output reg  [31:0] instr
+	output reg  [31:0] instr,
+
+	// Bootloader write port
+	input  wire        boot_we,
+	input  wire [31:0] boot_addr,
+	input  wire [31:0] boot_wdata
 );
 
-	// 1024 words = 4 KB
-	// Declare instruction memory array (word-addressable, 4 KB total)
+	// 2048 words = 8 KB
+	// Declare instruction memory array (word-addressable, 8 KB total)
 	(* ram_style = "block" *)
-	reg [31:0] imem [0:1023];
+	reg [31:0] imem [0:2047];
 
 	// FPGA ROM initialization
 	// Initialize instruction memory from hex file (simulation / FPGA)
 	initial begin
-    	$readmemh("C:/Users/Ruchi/HWLabProject/sat/risc_v_2/imem.hex", imem);
+    	$readmemh("imem.hex", imem);
 	end
 
 	// Synchronous instruction fetch
 	// Use word-aligned PC (pc[11:2]) to index memory
 	always @(posedge clk) begin
-    	instr <= imem[pc[11:2]];	// word address
+    	instr <= imem[pc[12:2]];	// word address
+	end
+
+	// Bootloader Write Port
+	always @(posedge clk) begin
+		if (boot_we) begin
+			imem[boot_addr[12:2]] <= boot_wdata;
+		end
 	end
 
 endmodule
@@ -27,70 +39,47 @@ endmodule
 
 
 //====================================
-// Data Memory (DMEM) - FPGA-safe
+// Data Memory (DMEM) - FPGA-safe BRAM
 //====================================
 module data_mem (
-	input     	clk,
-
-	// Read port
-	input     	re,
-	input  [31:0] raddr,   // byte address
-	output reg [31:0] rdata,
-
-	// Write port
-	input     	we,
-	input  [31:0] waddr,   // byte address
-	input  [31:0] wdata,
-	input  [3:0]  wstrb
+    input       clk,
+    input       re,
+    input  [31:0] raddr,
+    output wire [31:0] rdata, // Changed to wire
+    input       we,
+    input  [31:0] waddr,
+    input  [31:0] wdata,
+    input  [3:0]  wstrb
 );
+    (* ram_style = "block" *)
+    reg [31:0] dmem [0:2047];
 
-	// Declare data memory array (word-addressable, 4 KB total)
-	// TODO-DMEM-1: Declare dmem
-	(* ram_style = "block" *)
-	reg [31:0] dmem [0:1023];
+    wire [10:0] rindex = raddr[12:2];
+    wire [10:0] windex = waddr[12:2];
 
-	// Decode byte address to word index
-	wire [9:0] rindex = raddr[11:2];
-	wire [9:0] windex = waddr[11:2];
+    initial begin
+        $readmemh("dmem.hex", dmem);
+    end
 
-	// Simulation / FPGA init
-	// TODO-DMEM-2: Initialize data memory from dmem.hex file
-	initial begin
-    	$readmemh("dmem.hex", dmem);
-	end
+    reg [31:0] rdata_bram; // Internal sync register
 
-	// -------------------------
-	// WRITE + READ (SYNC)
-	// -------------------------
+    // Purely Synchronous Block (Guarantees BRAM inference)
+    always @(posedge clk) begin
+        if (we) begin
+            if (wstrb[0]) dmem[windex][7:0]   <= wdata[7:0];
+            if (wstrb[1]) dmem[windex][15:8]  <= wdata[15:8];
+            if (wstrb[2]) dmem[windex][23:16] <= wdata[23:16];
+            if (wstrb[3]) dmem[windex][31:24] <= wdata[31:24];
+        end
+        if (re) begin
+            rdata_bram <= dmem[rindex];
+        end
+    end
 
-	// Synchronous write and read logic
-	// - Support byte-wise writes using wstrb
-	// - Provide 1-cycle read latency
-	// - Handle same-cycle read-after-write using byte-level forwarding
-
-	always @(posedge clk) begin
-    	// ---- WRITE ----
-    	if (we) begin
-        	if (wstrb[0]) dmem[windex][7:0]   <= wdata[7:0];
-        	if (wstrb[1]) dmem[windex][15:8]  <= wdata[15:8];
-        	if (wstrb[2]) dmem[windex][23:16] <= wdata[23:16]; // TODO-DMEM-3
-        	if (wstrb[3]) dmem[windex][31:24] <= wdata[31:24]; // TODO-DMEM-3
-    	end
-
-    	// ---- READ (1-cycle latency, RAW-safe) ----
-    	if (re) begin
-        	if (we && (rindex == windex)) begin
-            	// Byte-level forwarding
-            	rdata[7:0]   <= wstrb[0] ? wdata[7:0]   : dmem[rindex][7:0];
-            	rdata[15:8]  <= wstrb[1] ? wdata[15:8]  : dmem[rindex][15:8];  // TODO-DMEM-3
-            	rdata[23:16] <= wstrb[2] ? wdata[23:16] : dmem[rindex][23:16]; // TODO-DMEM-3
-            	rdata[31:24] <= wstrb[3] ? wdata[31:24] : dmem[rindex][31:24]; // TODO-DMEM-3
-        	end
-        	else begin
-            	rdata <= dmem[rindex];
-        	end
-    	end
-    	// else: rdata holds value (exact match to original)
-	end
+    // Combinational RAW Forwarding (Outside the BRAM block)
+    assign rdata[7:0]   = (we && (rindex == windex) && wstrb[0]) ? wdata[7:0]   : rdata_bram[7:0];
+    assign rdata[15:8]  = (we && (rindex == windex) && wstrb[1]) ? wdata[15:8]  : rdata_bram[15:8];
+    assign rdata[23:16] = (we && (rindex == windex) && wstrb[2]) ? wdata[23:16] : rdata_bram[23:16];
+    assign rdata[31:24] = (we && (rindex == windex) && wstrb[3]) ? wdata[31:24] : rdata_bram[31:24];
 
 endmodule

@@ -1,0 +1,270 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Sat Apr 18 21:24:25 2026
+| Host         : DESKTOP-828PQJS running 64-bit major release  (build 9200)
+| Command      : report_control_sets -verbose -file top_fpga_control_sets_placed.rpt
+| Design       : top_fpga
+| Device       : xc7a100t
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |   192 |
+|    Minimum number of control sets                        |   192 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |   106 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |   192 |
+| >= 0 to < 4        |     1 |
+| >= 4 to < 6        |     3 |
+| >= 6 to < 8        |     2 |
+| >= 8 to < 10       |     7 |
+| >= 10 to < 12      |     3 |
+| >= 12 to < 14      |    16 |
+| >= 14 to < 16      |     0 |
+| >= 16              |   160 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |               5 |            3 |
+| No           | No                    | Yes                    |             413 |          177 |
+| No           | Yes                   | No                     |               0 |            0 |
+| Yes          | No                    | No                     |              40 |           19 |
+| Yes          | No                    | Yes                    |            3336 |         1468 |
+| Yes          | Yes                   | No                     |              28 |            9 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++----------------+------------------------------------------------------------+-------------------------------------------+------------------+----------------+--------------+
+|  Clock Signal  |                        Enable Signal                       |              Set/Reset Signal             | Slice Load Count | Bel Load Count | Bels / Slice |
++----------------+------------------------------------------------------------+-------------------------------------------+------------------+----------------+--------------+
+|  clk_IBUF_BUFG |                                                            | UART_INST/tx_fifo/SR[0]                   |                1 |              1 |         1.00 |
+|  cpu_clk       | UART_INST/rx_ticks__0[0]                                   | UART_INST/tx_fifo/SR[0]                   |                1 |              4 |         4.00 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_sqrt/FSM_onehot_state[3]_i_1_n_0 | boot_inst/cpu_reset_reg_0                 |                1 |              4 |         4.00 |
+|  cpu_clk       |                                                            |                                           |                3 |              5 |         1.67 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_mult_div/counter[0]                    | boot_inst/cpu_reset_reg_0                 |                2 |              6 |         3.00 |
+|  cpu_clk       | pipe_u/u_ex_mem_reg/mem_read_o_reg_0                       | pipe_u/u_ex_mem_reg/ex_result_o_reg[31]_0 |                2 |              6 |         3.00 |
+|  clk_IBUF_BUFG | UART_INST/uart_rx_ready                                    |                                           |                3 |              8 |         2.67 |
+|  cpu_clk       | UART_INST/tx_fifo/E[0]                                     | UART_INST/tx_fifo/SR[0]                   |                8 |              8 |         1.00 |
+|  cpu_clk       | UART_INST/rx_shift_reg__0[0]                               | UART_INST/tx_fifo/SR[0]                   |                4 |              8 |         2.00 |
+|  cpu_clk       | UART_INST/rx_data[7]_i_1_n_0                               | UART_INST/tx_fifo/SR[0]                   |                3 |              8 |         2.67 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_add_sub/exp_res[7]_i_1_n_0       | boot_inst/cpu_reset_reg_0                 |                2 |              8 |         4.00 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_sqrt/exp_res[8]_i_1_n_0          | boot_inst/cpu_reset_reg_0                 |                6 |              9 |         1.50 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_div/exp_res[0]                   | boot_inst/cpu_reset_reg_0                 |                3 |              9 |         3.00 |
+|  cpu_clk       | UART_INST/tx_fifo/read_ptr0                                | UART_INST/tx_fifo/SR[0]                   |                3 |             11 |         3.67 |
+|  cpu_clk       | boot_inst/boot_addr[2]_i_1_n_0                             | UART_INST/tx_fifo/SR[0]                   |                3 |             11 |         3.67 |
+|  cpu_clk       | pipe_u/u_ex_mem_reg/write_ptr0                             | UART_INST/tx_fifo/SR[0]                   |                4 |             11 |         2.75 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_64_127_0_2_i_1_n_0            |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_768_831_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_960_1023_0_2_i_1_n_0          |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_704_767_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_832_895_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_896_959_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_256_319_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_320_383_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_0_63_0_2_i_4_n_0              |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_512_575_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_128_191_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_576_639_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_640_703_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_448_511_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_192_255_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | UART_INST/tx_fifo/memory_reg_384_447_0_2_i_1_n_0           |                                           |                3 |             12 |         4.00 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_div/sign_res                     | boot_inst/cpu_reset_reg_0                 |                8 |             25 |         3.12 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_add_sub/mant_res[24]_i_1_n_0     | boot_inst/cpu_reset_reg_0                 |               10 |             25 |         2.50 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_sqrt/Q[25]_i_1_n_0               | boot_inst/cpu_reset_reg_0                 |                4 |             26 |         6.50 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_div/accumulator[25]_i_1__0_n_0   | boot_inst/cpu_reset_reg_0                 |                5 |             26 |         5.20 |
+|  cpu_clk       | boot_inst/bytes_received[31]_i_1_n_0                       | UART_INST/tx_fifo/SR[0]                   |                6 |             30 |         5.00 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_div/count[0]                     | boot_inst/cpu_reset_reg_0                 |                9 |             31 |         3.44 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_1                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_add_sub/exp_a[7]_i_1_n_0         | boot_inst/cpu_reset_reg_0                 |               10 |             32 |         3.20 |
+|  cpu_clk       | boot_inst/payload_size[0]                                  | UART_INST/tx_fifo/SR[0]                   |               12 |             32 |         2.67 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_add_sub/result[31]_i_1__0_n_0    | boot_inst/cpu_reset_reg_0                 |               14 |             32 |         2.29 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_9                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_1                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_15                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_4                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_0                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_11                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_5                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_10                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_12                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_10                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_12                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_3                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_2                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_0                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_13                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[10]_4                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_7                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_11                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_13                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_14                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_8                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[10]_6                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_9                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_15                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_7                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_5                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_2                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_wdata[31]_i_1_n_0                           | UART_INST/tx_fifo/SR[0]                   |               16 |             32 |         2.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_4                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_6                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_3                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_8                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[10]                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[10]_1                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[10]_5                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[10]_6                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[10]_2                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]                              |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/boot_addr_reg[11]_14                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[10]_0                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[10]_3                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[9]_3                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_8                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_9                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_10                           |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_7                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_13                           |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_1                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_0                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_12                           |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_4                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[9]                               |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_3                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[9]_6                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[9]_2                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[2]_6[0]             | boot_inst/cpu_reset_reg_0                 |                8 |             32 |         4.00 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[1]_1[0]             | boot_inst/cpu_reset_reg_0                 |               26 |             32 |         1.23 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[1]_6[0]             | boot_inst/cpu_reset_reg_0                 |               24 |             32 |         1.33 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[1]_0[0]             | boot_inst/cpu_reset_reg_0                 |               13 |             32 |         2.46 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[1]_8[0]             | boot_inst/cpu_reset_reg_0                 |                9 |             32 |         3.56 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[2]_1[0]             | boot_inst/cpu_reset_reg_0                 |                9 |             32 |         3.56 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[2]_4[0]             | boot_inst/cpu_reset_reg_0                 |                7 |             32 |         4.57 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[2]_8[0]             | boot_inst/cpu_reset_reg_0                 |               17 |             32 |         1.88 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[3]_3[0]             | boot_inst/cpu_reset_reg_0                 |               11 |             32 |         2.91 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[4]_1[0]             | boot_inst/cpu_reset_reg_0                 |               14 |             32 |         2.29 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[4]_2[0]             | boot_inst/cpu_reset_reg_0                 |               14 |             32 |         2.29 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[3]_0[0]             | boot_inst/cpu_reset_reg_0                 |               10 |             32 |         3.20 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_14[0]               | boot_inst/cpu_reset_reg_0                 |               19 |             32 |         1.68 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_16[0]               | boot_inst/cpu_reset_reg_0                 |               12 |             32 |         2.67 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_17[0]               | boot_inst/cpu_reset_reg_0                 |               17 |             32 |         1.88 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_1[0]                | boot_inst/cpu_reset_reg_0                 |               25 |             32 |         1.28 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_13[0]               | boot_inst/cpu_reset_reg_0                 |               15 |             32 |         2.13 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_15[0]               | boot_inst/cpu_reset_reg_0                 |               13 |             32 |         2.46 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_10[0]               | boot_inst/cpu_reset_reg_0                 |               16 |             32 |         2.00 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_0[0]                | boot_inst/cpu_reset_reg_0                 |               24 |             32 |         1.33 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_11[0]               | boot_inst/cpu_reset_reg_0                 |               14 |             32 |         2.29 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_12[0]               | boot_inst/cpu_reset_reg_0                 |               10 |             32 |         3.20 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_21[0]               | boot_inst/cpu_reset_reg_0                 |               16 |             32 |         2.00 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_31[0]               | boot_inst/cpu_reset_reg_0                 |               11 |             32 |         2.91 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_19[0]               | boot_inst/cpu_reset_reg_0                 |               12 |             32 |         2.67 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_30[0]               | boot_inst/cpu_reset_reg_0                 |               18 |             32 |         1.78 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_29[0]               | boot_inst/cpu_reset_reg_0                 |               16 |             32 |         2.00 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_23[0]               | boot_inst/cpu_reset_reg_0                 |               16 |             32 |         2.00 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_26[0]               | boot_inst/cpu_reset_reg_0                 |               17 |             32 |         1.88 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_28[0]               | boot_inst/cpu_reset_reg_0                 |               17 |             32 |         1.88 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_24[0]               | boot_inst/cpu_reset_reg_0                 |               22 |             32 |         1.45 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_25[0]               | boot_inst/cpu_reset_reg_0                 |               21 |             32 |         1.52 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_20[0]               | boot_inst/cpu_reset_reg_0                 |               10 |             32 |         3.20 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_2[0]                | boot_inst/cpu_reset_reg_0                 |               23 |             32 |         1.39 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_18[0]               | boot_inst/cpu_reset_reg_0                 |               17 |             32 |         1.88 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_22[0]               | boot_inst/cpu_reset_reg_0                 |               27 |             32 |         1.19 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_27[0]               | boot_inst/cpu_reset_reg_0                 |               16 |             32 |         2.00 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_3[0]                | boot_inst/cpu_reset_reg_0                 |               18 |             32 |         1.78 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_9[0]                | boot_inst/cpu_reset_reg_0                 |               11 |             32 |         2.91 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_6[0]                | boot_inst/cpu_reset_reg_0                 |               15 |             32 |         2.13 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_4[0]                | boot_inst/cpu_reset_reg_0                 |               16 |             32 |         2.00 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_5[0]                | boot_inst/cpu_reset_reg_0                 |               14 |             32 |         2.29 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_8[0]                | boot_inst/cpu_reset_reg_0                 |               18 |             32 |         1.78 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/fp_reg_write_o_reg_7[0]                | boot_inst/cpu_reset_reg_0                 |               16 |             32 |         2.00 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[1]_3[0]             | boot_inst/cpu_reset_reg_0                 |               11 |             32 |         2.91 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_div/result[31]_i_1__3_n_0        | boot_inst/cpu_reset_reg_0                 |               11 |             32 |         2.91 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[1]_4[0]             | boot_inst/cpu_reset_reg_0                 |               10 |             32 |         3.20 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_div/jal_o_reg[0]                 | boot_inst/cpu_reset_reg_0                 |               15 |             32 |         2.13 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[4]_7[0]             | boot_inst/cpu_reset_reg_0                 |               13 |             32 |         2.46 |
+|  cpu_clk       | pipe_u/u_if_id_reg/p_0_in                                  | boot_inst/cpu_reset_reg_0                 |               19 |             32 |         1.68 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[4]_4[0]             | boot_inst/cpu_reset_reg_0                 |                8 |             32 |         4.00 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_mult_div/divisor[0]                    | boot_inst/cpu_reset_reg_0                 |               20 |             32 |         1.60 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[2]_5[0]             | boot_inst/cpu_reset_reg_0                 |                7 |             32 |         4.57 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[2]_9[0]             | boot_inst/cpu_reset_reg_0                 |               15 |             32 |         2.13 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[3]_1[0]             | boot_inst/cpu_reset_reg_0                 |               25 |             32 |         1.28 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_sqrt/result[31]_i_1__4_n_0       | boot_inst/cpu_reset_reg_0                 |               12 |             32 |         2.67 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/start_cvt_reg_n_0                  | boot_inst/cpu_reset_reg_0                 |               19 |             32 |         1.68 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_mult_div/result[31]_i_1_n_0            | boot_inst/cpu_reset_reg_0                 |               17 |             32 |         1.88 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[2]_2[0]             | boot_inst/cpu_reset_reg_0                 |                9 |             32 |         3.56 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[1]_9[0]             | boot_inst/cpu_reset_reg_0                 |               12 |             32 |         2.67 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[2]_3[0]             | boot_inst/cpu_reset_reg_0                 |               10 |             32 |         3.20 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[2]_0[0]             | boot_inst/cpu_reset_reg_0                 |               14 |             32 |         2.29 |
+|  cpu_clk       | pipe_u/u_ex_mem_reg/mem_read_o_reg_1[0]                    |                                           |               16 |             32 |         2.00 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[2]_7[0]             | boot_inst/cpu_reset_reg_0                 |               12 |             32 |         2.67 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_add_sub/exp_b[7]_i_1_n_0         | boot_inst/cpu_reset_reg_0                 |               10 |             32 |         3.20 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_mult/result[31]_i_1__1_n_0       | boot_inst/cpu_reset_reg_0                 |                9 |             32 |         3.56 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[1]_5[0]             | boot_inst/cpu_reset_reg_0                 |               10 |             32 |         3.20 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[1]_7[0]             | boot_inst/cpu_reset_reg_0                 |               10 |             32 |         3.20 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[3]_2[0]             | boot_inst/cpu_reset_reg_0                 |               23 |             32 |         1.39 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[1]_2[0]             | boot_inst/cpu_reset_reg_0                 |                8 |             32 |         4.00 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[4]_6[0]             | boot_inst/cpu_reset_reg_0                 |               12 |             32 |         2.67 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[4]_5[0]             | boot_inst/cpu_reset_reg_0                 |               10 |             32 |         3.20 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/dest_reg_sel_o_reg[4]_3[0]             | boot_inst/cpu_reset_reg_0                 |               15 |             32 |         2.13 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/csr_addr_o_reg[5]_1[0]                 | boot_inst/cpu_reset_reg_0                 |               15 |             32 |         2.13 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/csr_addr_o_reg[5]_2[0]                 | boot_inst/cpu_reset_reg_0                 |               13 |             32 |         2.46 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/csr_addr_o_reg[5]_0[0]                 | boot_inst/cpu_reset_reg_0                 |               10 |             32 |         3.20 |
+|  cpu_clk       | pipe_u/u_mem_wb_reg/E[0]                                   | boot_inst/cpu_reset_reg_0                 |               14 |             32 |         2.29 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_6                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[9]_1                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[9]_0                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_2                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_11                           |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[9]_4                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_14                           |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[12]_5                            |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | boot_inst/ex_result_o_reg[9]_5                             |                                           |                8 |             32 |         4.00 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_cmp/E[0]                         | boot_inst/cpu_reset_reg_0                 |               30 |             33 |         1.10 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_div/E[0]                         | boot_inst/cpu_reset_reg_0                 |                7 |             33 |         4.71 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_mult/mant_res[47]_i_1_n_0        | boot_inst/cpu_reset_reg_0                 |               17 |             56 |         3.29 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_fpu/u_sqrt/count[5]_i_1_n_0            | boot_inst/cpu_reset_reg_0                 |               20 |             57 |         2.85 |
+|  cpu_clk       | pipe_u/u_id_ex_reg/computing0                              | boot_inst/cpu_reset_reg_0                 |               32 |             64 |         2.00 |
+|  cpu_clk       | pipe_u/u_ex_stage/u_mult_div/accumulator[0]                | boot_inst/cpu_reset_reg_0                 |               36 |             64 |         1.78 |
+|  cpu_clk       |                                                            | UART_INST/tx_fifo/SR[0]                   |               33 |             86 |         2.61 |
+|  cpu_clk       | pipe_u/u_id_ex_reg/pc_o[31]_i_1_n_0                        | boot_inst/cpu_reset_reg_0                 |               87 |            231 |         2.66 |
+|  cpu_clk       |                                                            | boot_inst/cpu_reset_reg_0                 |              143 |            326 |         2.28 |
++----------------+------------------------------------------------------------+-------------------------------------------+------------------+----------------+--------------+
+
+
