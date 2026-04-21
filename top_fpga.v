@@ -65,6 +65,12 @@ module top_fpga #(
     wire is_uart_addr  = (dmem_read_address[31:28] == 4'h8) || (dmem_write_address[31:28] == 4'h8);
     wire uart_we       = is_uart_addr && dmem_write_ready;
     wire uart_re       = is_uart_addr && dmem_read_ready;
+
+    // ---- Systolic Accelerator address decode (0x9000_xxxx) ----
+    wire is_sys_addr_wr = (dmem_write_address[31:28] == 4'h9);
+    wire is_sys_addr_rd = (dmem_read_address[31:28]  == 4'h9);
+    wire sys_we         = is_sys_addr_wr && dmem_write_ready;
+    wire sys_re         = is_sys_addr_rd && dmem_read_ready;
     
     // UART hardware wires
     wire [7:0] uart_rx_data;
@@ -91,9 +97,22 @@ module top_fpga #(
                                 (dmem_read_address[7:0] == 8'h04) ? {24'b0, uart_rx_data} : 32'h0;
         end
     end
+
+    // Systolic Accelerator read latching (same 1-cycle pattern as UART)
+    wire [31:0] sys_rd_data;
+    reg  [31:0] sys_read_data_r;
+    reg         is_sys_read_r;
+
+    always @(posedge cpu_clk) begin
+        is_sys_read_r <= sys_re;
+        if (sys_re)
+            sys_read_data_r <= sys_rd_data;
+    end
     
-    // During the pipeline WB stage, output either the safely latched UART data, or native BRAM data.
-    assign dmem_read_data_pipe = is_uart_read_r ? uart_read_data_r : dmem_read_data_bram;
+    // During the pipeline WB stage, select the correct peripheral or native BRAM data.
+    assign dmem_read_data_pipe = is_uart_read_r ? uart_read_data_r :
+                                 is_sys_read_r  ? sys_read_data_r  :
+                                 dmem_read_data_bram;
 
     // LED mappings! Top 8 bits = Most recently received character. Bottom 8 bits = Current PC.
     reg [7:0] led_upper;
@@ -121,6 +140,19 @@ module top_fpga #(
         .rx_ready   (uart_rx_ready),
         .rx_ack     (uart_rx_ack)
     );
+
+	////////////////////////////////////////////////////////////
+	// SYSTOLIC ARRAY ACCELERATOR at 0x9000_0000
+	////////////////////////////////////////////////////////////
+	systolic_accel u_sys_accel (
+		.clk     (cpu_clk),
+		.rst_n   (cpu_reset),
+		.wr_en   (sys_we),
+		.wr_addr (dmem_write_address[11:0]),
+		.wr_data (dmem_write_data),
+		.rd_addr (dmem_read_address[11:0]),
+		.rd_data (sys_rd_data)
+	);
 
 	////////////////////////////////////////////////////////////
 	// HARDWARE BOOTLOADER
@@ -185,14 +217,14 @@ module top_fpga #(
     // via $readmemh and the CPU reads garbage for every string / constant.
     // The CPU is held in reset while boot_we pulses, so the two producers of
     // these write signals are mutually exclusive.
-    wire bram_we           = boot_we || (dmem_write_ready && !is_uart_addr);
+    wire bram_we           = boot_we || (dmem_write_ready && !is_uart_addr && !is_sys_addr_wr);
     wire [31:0] bram_waddr = boot_we ? boot_addr  : dmem_write_address;
     wire [31:0] bram_wdata = boot_we ? boot_wdata : dmem_write_data;
     wire [3:0]  bram_wstrb = boot_we ? 4'b1111    : dmem_write_byte;
 
 	data_mem DMEM (
 		.clk   (cpu_clk), // DMEM stays at 50MHz to match pipeline
-		.re    (dmem_read_ready && !is_uart_addr), 
+		.re    (dmem_read_ready && !is_uart_addr && !is_sys_addr_rd), 
 		.raddr (dmem_read_address),
 		.rdata (dmem_read_data_bram), 
 		.we    (bram_we),

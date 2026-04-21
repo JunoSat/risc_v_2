@@ -88,19 +88,21 @@ module hazard_unit (
         end
 
         // --- Control Hazard Logic ---
+        if (branch_taken) begin
+            flush_if = 1'b1;
+            flush_id = 1'b1;
+            stall_if = 1'b0;
+            stall_id = 1'b0;
+        end
+        
+        // --- Exception Trapping Logic ---
         if (exception_trigger) begin
-            flush_if = 1'b0; // Comb fetch bypasses flush_if requirement
+            flush_if = 1'b1;
             flush_id = 1'b1;
             flush_ex = 1'b1;
             stall_if = 1'b0;
             stall_id = 1'b0;
             stall_ex = 1'b0;
-        end
-        else if (branch_taken) begin
-            flush_if = 1'b0; // Comb fetch bypasses flush_if requirement
-            flush_id = 1'b1;
-            stall_if = 1'b0;
-            stall_id = 1'b0;
         end
     end
 

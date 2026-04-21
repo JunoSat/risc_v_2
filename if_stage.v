@@ -25,12 +25,8 @@ module if_stage #(
 
     reg [31:0] pc_reg;
 
-    wire [31:0] next_pc = exception_trigger ? exception_vector :
-                          branch_taken      ? branch_target :
-                          pc_reg;
-                          
-    assign inst_mem_address = next_pc;
-    assign pc_o             = next_pc;
+    assign inst_mem_address = pc_reg;
+    assign pc_o             = pc_reg;
     assign inst_mem_is_ready = ~stall;
 
     always @(posedge clk) begin
@@ -38,7 +34,15 @@ module if_stage #(
             pc_reg <= RESET_PC;
         end
         else if (!stall) begin
-            pc_reg <= next_pc + 4;
+            if (exception_trigger) begin
+                pc_reg <= exception_vector;
+            end
+            else if (branch_taken) begin
+                pc_reg <= branch_target;
+            end
+            else begin
+                pc_reg <= pc_reg + 4;
+            end
         end
     end
 
