@@ -41,6 +41,49 @@ You need the official RISC-V Bare-Metal GUI/Compiler installed to translate C fi
 ### 3. Writing and Disptaching Software
 Anytime you modify `c_toolchain/main.c` or write a custom `.c` firmware file, you can compile and dispatch it to the FPGA automatically using the root `Makefile`! 
 
+For example, to interface with an AXI4-Lite hardware accelerator like a CORDIC engine, your C code can directly write memory-mapped values over the bus:
+
+```c
+#include <stdint.h>
+
+// Defines the location where your new CORDIC AXI hardware was memory-mapped
+#define CORDIC_TARGET_ADDR ((volatile int32_t*) 0x40000000)
+
+void request_cordic_sine(float angle_in_radians) {
+    // 1. Shift the float up by 2^28 (268,435,456) for Q4.28 fixed-point format
+    float shifted = angle_in_radians * 268435456.0f;
+    
+    // 2. Truncate it forcefully into a 32-bit signed integer
+    int32_t q4_28_angle = (int32_t) shifted;
+    
+    // 3. Transmit the purely integer binary over AXI!
+    *CORDIC_TARGET_ADDR = q4_28_angle;
+}
+```
+
+### Retrieving Results via Address Offsets
+
+CORDIC inherently calculates both Sine and Cosine iteratively during the same cycle burst. You do not tell the hardware *which* operation to perform. Instead, the AXI Slave wrapper separates the output wires across different memory addresses using byte offsets:
+
+* **Write to `0x4000_0000`**: Writing the `target_angle` pulses the `start` signal on the CORDIC engine.
+* **Read from `0x4000_0004`**: Read the `Status Register` to check if `valid_out` has been asserted.
+* **Read from `0x4000_0008`**: Read the **Sine** result directly.
+* **Read from `0x4000_000C`**: Read the **Cosine** result directly.
+
+```c
+#define CORDIC_ANGLE  ((volatile int32_t*) 0x40000000)
+#define CORDIC_STATUS ((volatile int32_t*) 0x40000004)
+#define CORDIC_SINE   ((volatile int32_t*) 0x40000008)
+#define CORDIC_COSINE ((volatile int32_t*) 0x4000000C)
+
+void compute_math(int32_t angle) {
+    *CORDIC_ANGLE = angle;                   // 1. Send data & trigger start
+    while (*CORDIC_STATUS == 0);             // 2. Wait for CORDIC to finish
+    int32_t my_sine = *CORDIC_SINE;          // 3. I want Sine, so I read offset +0x8!
+    int32_t my_cosine = *CORDIC_COSINE;      // 4. If I wanted Cosine, I read offset +0xC!
+}
+```
+
 Open your Command Prompt or PowerShell in the root directory and use:
 ```bash
 # Compiles the default 'main.c' and deploys it over the default COM3 port
