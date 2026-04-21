@@ -161,6 +161,19 @@ module axi_systolic_4x4 #(
         end
     end
     
+    // -----------------------------------------------------------------------
+    // Step Counter + Output Auto-Latch
+    // 
+    // The systolic array results stream out serially - each column's result
+    // is only valid for exactly ONE clock cycle as it exits PE[3][col].
+    // Column j result is valid AFTER the (4+j)th step (0-indexed).
+    //
+    // At step trigger N (step_cnt == N before increment), the psum_out wires
+    // hold the result from step N-1's computation (non-blocking Verilog semantics).
+    // So we latch col j when step_cnt == 4+j (one cycle after the column's result arrived).
+    // -----------------------------------------------------------------------
+    reg [3:0]  step_cnt;           // Counts total triggers since last activation write
+    reg [31:0] out_r [0:3];        // Stable output registers readable by the CPU
     wire [31:0] psum_out_0, psum_out_1, psum_out_2, psum_out_3;
     
     systolic_array_4x4 #(
@@ -177,6 +190,27 @@ module axi_systolic_4x4 #(
         .psum_in_0(32'd0), .psum_in_1(32'd0), .psum_in_2(32'd0), .psum_in_3(32'd0),
         .psum_out_0(psum_out_0), .psum_out_1(psum_out_1), .psum_out_2(psum_out_2), .psum_out_3(psum_out_3)
     );
+
+    always @(posedge clk) begin
+        if (!reset) begin
+            step_cnt <= 0;
+            out_r[0] <= 0; out_r[1] <= 0; out_r[2] <= 0; out_r[3] <= 0;
+        end else if (step_trigger) begin
+            step_cnt <= step_cnt + 1;
+            // psum_out[j] holds step (step_cnt)'s result at this clock edge
+            // (non-blocking: PE regs haven't updated yet, so we see last cycle's value)
+            // Col j result exits PE[3][j] at steps 4+j, so latch it when step_cnt==4+j
+            case (step_cnt)
+                4'd4: out_r[0] <= psum_out_0;
+                4'd5: out_r[1] <= psum_out_1;
+                4'd6: out_r[2] <= psum_out_2;
+                4'd7: begin
+                    out_r[3] <= psum_out_3;
+                    step_cnt <= 0;  // Auto-reset for next computation
+                end
+            endcase
+        end
+    end
 
     // AXI WRITE logic
     always @(posedge clk) begin
@@ -197,11 +231,12 @@ module axi_systolic_4x4 #(
             // Perform actual memory write mapped at 0x5... base
             if (s_axi_wvalid && s_axi_wready && s_axi_awvalid && s_axi_awready) begin
                 if (s_axi_awaddr[7:0] >= 8'h00 && s_axi_awaddr[7:0] <= 8'h3C) begin
-                    weight_reg[s_axi_awaddr[7:0] >> 2] <= s_axi_wdata; // Write Weights
+                    weight_reg[s_axi_awaddr[7:0] >> 2] <= s_axi_wdata;
                 end else if (s_axi_awaddr[7:0] >= 8'h40 && s_axi_awaddr[7:0] <= 8'h4C) begin
-                    act_reg[(s_axi_awaddr[7:0] - 8'h40) >> 2] <= s_axi_wdata; // Write Activations
+                    act_reg[(s_axi_awaddr[7:0] - 8'h40) >> 2] <= s_axi_wdata;
+                    step_cnt <= 0;  // New activation loaded = start of a new computation
                 end else if (s_axi_awaddr[7:0] == 8'h50) begin
-                    step_trigger <= 1; // Trigger One Step Pulse
+                    step_trigger <= 1;
                 end
                 
                 s_axi_bvalid <= 1;
@@ -223,11 +258,11 @@ module axi_systolic_4x4 #(
                 s_axi_rvalid <= 1;
                 s_axi_rresp <= 2'b00;
                 
-                // Decode read output register offset
-                if (s_axi_araddr[7:0] == 8'h60) s_axi_rdata <= psum_out_0;
-                else if (s_axi_araddr[7:0] == 8'h64) s_axi_rdata <= psum_out_1;
-                else if (s_axi_araddr[7:0] == 8'h68) s_axi_rdata <= psum_out_2;
-                else if (s_axi_araddr[7:0] == 8'h6C) s_axi_rdata <= psum_out_3;
+                // Read from stable output latch registers (auto-captured by step counter)
+                if (s_axi_araddr[7:0] == 8'h60) s_axi_rdata <= out_r[0];
+                else if (s_axi_araddr[7:0] == 8'h64) s_axi_rdata <= out_r[1];
+                else if (s_axi_araddr[7:0] == 8'h68) s_axi_rdata <= out_r[2];
+                else if (s_axi_araddr[7:0] == 8'h6C) s_axi_rdata <= out_r[3];
                 else s_axi_rdata <= 32'h0;
                 
             end else if (s_axi_rvalid && s_axi_rready) s_axi_rvalid <= 0;

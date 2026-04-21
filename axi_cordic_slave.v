@@ -32,6 +32,11 @@ module axi_cordic_slave (
     wire [31:0] cordic_sin_out;
     wire [31:0] cordic_cos_out;
 
+    // Result latches: capture sin/cos the moment valid_out fires,
+    // so the CPU can read them any time afterwards without racing the CORDIC state machine.
+    reg [31:0] sin_latch;
+    reg [31:0] cos_latch;
+
     reg [31:0] read_addr_buf;
     
     cordic_iterative CORDIC_CORE (
@@ -44,12 +49,24 @@ module axi_cordic_slave (
         .cos_out(cordic_cos_out)
     );
 
-    // Track when status read occurs
+    // latched_valid: cleared by cordic_start (new angle written), set when CORDIC finishes.
+    // cordic_start MUST have priority - otherwise a new angle write while DONE state is active
+    // would leave latched_valid=1 and the CPU would incorrectly read the OLD result immediately.
     reg latched_valid;
     always @(posedge clk) begin
-        if (!reset) latched_valid <= 0;
-        else if (cordic_valid_out) latched_valid <= 1;
-        else if (cordic_start) latched_valid <= 0;
+        if (!reset) begin
+            latched_valid <= 0;
+            sin_latch     <= 0;
+            cos_latch     <= 0;
+        end else if (cordic_start) begin
+            // New computation requested - clear stale valid flag
+            latched_valid <= 0;
+        end else if (cordic_valid_out) begin
+            // CORDIC finished - latch the stable results NOW before CORDIC goes back to IDLE
+            latched_valid <= 1;
+            sin_latch     <= cordic_sin_out;
+            cos_latch     <= cordic_cos_out;
+        end
     end
 
     // AXI WRITE logic
@@ -99,8 +116,8 @@ module axi_cordic_slave (
                 
                 case (s_axi_araddr[7:0])
                     8'h04: s_axi_rdata <= {31'b0, latched_valid};
-                    8'h08: s_axi_rdata <= cordic_sin_out;
-                    8'h0C: s_axi_rdata <= cordic_cos_out;
+                    8'h08: s_axi_rdata <= sin_latch;   // Stable latched result
+                    8'h0C: s_axi_rdata <= cos_latch;   // Stable latched result
                     default: s_axi_rdata <= 32'h0;
                 endcase
             end else if (s_axi_rvalid && s_axi_rready) begin
