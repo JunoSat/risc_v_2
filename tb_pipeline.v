@@ -125,7 +125,7 @@ initial begin
     end
 end
 
-always @(negedge clk) begin
+    always @(negedge clk) begin
     if (reset && f != 0) begin
         // Log result
         if (current_result != prev_result) begin
@@ -139,9 +139,16 @@ always @(negedge clk) begin
             prev_logged_pc <= pc_out;
         end
 
-        // Wait to show CSR state when x5 changes
-        if (DUT.regs[5] != 0 && $time > 500) begin
-            $fwrite(f, "time:%16t ,CSR mstatus evaluated: %08h\n", $time, DUT.u_csr_file.mstatus);
+        // Log instruction WB updates
+        if (DUT.wb_alu_to_reg && DUT.wb_rd != 0 && !stall) begin
+            if (DUT.wb_rd == 1) $display("Testing ADDI: x1 loaded with -> %0d", DUT.wb_result);
+            if (DUT.wb_rd == 2) $display("Testing ADDI: x2 loaded with -> %0d", DUT.wb_result);
+            if (DUT.wb_rd == 3) $display("Testing MUL: x1 * x2 into x3 -> %0d", DUT.wb_result);
+            if (DUT.wb_rd == 4) $display("Testing DIV: x3 / x1 into x4 -> %0d", DUT.wb_result);
+        end
+        if (DUT.wb_csr_we) begin
+            $display("Testing CSRRW: Writing to CSR addr %0h -> %0h", DUT.wb_csr_addr, DUT.wb_csr_wdata);
+            $display("  -> CSR mstatus evaluated directly: %0h", DUT.u_csr_file.mstatus);
         end
 
         $fflush(f);

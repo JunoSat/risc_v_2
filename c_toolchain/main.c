@@ -5,7 +5,7 @@ void c_trap_handler(unsigned int cause) {
 }
 
 int main() {
-    for (volatile int i = 0; i < 500000; i++); 
+    for (volatile int i = 0; i < 1; i++); 
 
     // Directly print Alphabet to ensure UART is ready
     for (char c = 'A'; c <= 'Z'; c++) print_char(c);
@@ -53,6 +53,40 @@ int main() {
         print_string("FAILED (Hex: ");
         print_hex(raw);
         print_string(")\r\n");
+    }
+
+    print_string("\r\n--- STARTING SYSTOLIC ARRAY TESTS ---\r\n");
+    volatile unsigned int* sa_ctrl   = (volatile unsigned int*)0x90000000;
+    volatile unsigned int* sa_status = (volatile unsigned int*)0x90000004;
+    volatile unsigned int* sa_mat_a  = (volatile unsigned int*)0x90000010;
+    volatile unsigned int* sa_mat_b  = (volatile unsigned int*)0x90000020;
+    volatile unsigned int* sa_mat_c  = (volatile unsigned int*)0x90000030;
+
+    // A = [1 2; 3 4], B = [5 6; 7 8]
+    sa_mat_a[0] = 1; sa_mat_a[1] = 2; sa_mat_a[2] = 3; sa_mat_a[3] = 4;
+    sa_mat_b[0] = 5; sa_mat_b[1] = 6; sa_mat_b[2] = 7; sa_mat_b[3] = 8;
+    
+    // Start computation
+    *sa_ctrl = 1;
+
+    // Poll status
+    while ((*sa_status & 2) == 0);
+
+    // Read C
+    unsigned int c00 = sa_mat_c[0];
+    unsigned int c01 = sa_mat_c[1];
+    unsigned int c10 = sa_mat_c[2];
+    unsigned int c11 = sa_mat_c[3];
+    
+    // Check results (19, 22, 43, 50)
+    if (c00 == 19 && c01 == 22 && c10 == 43 && c11 == 50) {
+        print_string("Systolic Array [PASSED]\r\n");
+    } else {
+        print_string("Systolic Array [FAILED]\r\n");
+        print_string("C00: "); print_int(c00); print_string("\r\n");
+        print_string("C01: "); print_int(c01); print_string("\r\n");
+        print_string("C10: "); print_int(c10); print_string("\r\n");
+        print_string("C11: "); print_int(c11); print_string("\r\n");
     }
 
     print_string("\r\nAll computational modules verified! Processor is fully operational!\r\n");

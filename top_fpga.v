@@ -27,16 +27,11 @@ module top_fpga #(
     // Safely resolves the -1.765ns Setup Timing Violation on the long 
     // Is_uart_read_r -> mem_read_data -> FW -> EX -> Branch -> Flush -> Pipeline_CE path.
     reg clk_50 = 0;
-    always @(posedge clk or negedge reset) begin
-        if (!reset) clk_50 <= 1'b0;
-        else clk_50 <= ~clk_50;
+    always @(posedge clk) begin
+        clk_50 <= ~clk_50;
     end
     
-    wire cpu_clk;
-    BUFG bufg_inst (
-        .I(clk_50),
-        .O(cpu_clk)
-    );
+    assign cpu_clk = clk_50;
 
 	////////////////////////////////////////////////////////////
 	// PIPE ↔ MEMORY WIRES
@@ -55,46 +50,107 @@ module top_fpga #(
     wire        dmem_read_valid = 1'b1;
     wire        dmem_write_valid = 1'b1;
 
-	wire [31:0] dmem_read_data_bram;
-	wire [31:0] dmem_read_data_pipe;
+    wire [31:0] dmem_read_data_pipe;
+    wire        axi_dmem_stall;
+
+    // AXI4-Lite Main Bus Wires
+    wire [31:0] s_axi_awaddr, s_axi_wdata, s_axi_araddr, s_axi_rdata;
+    wire [3:0]  s_axi_wstrb;
+    wire [1:0]  s_axi_bresp, s_axi_rresp;
+    wire        s_axi_awvalid, s_axi_awready, s_axi_wvalid, s_axi_wready;
+    wire        s_axi_bvalid, s_axi_bready, s_axi_arvalid, s_axi_arready;
+    wire        s_axi_rvalid, s_axi_rready;
+
+    wire [31:0] m0_axi_awaddr, m0_axi_wdata, m0_axi_araddr, m0_axi_rdata;
+    wire [3:0]  m0_axi_wstrb;
+    wire [1:0]  m0_axi_bresp, m0_axi_rresp;
+    wire        m0_axi_awvalid, m0_axi_awready, m0_axi_wvalid, m0_axi_wready;
+    wire        m0_axi_bvalid, m0_axi_bready, m0_axi_arvalid, m0_axi_arready;
+    wire        m0_axi_rvalid, m0_axi_rready;
+
+    wire [31:0] m1_axi_awaddr, m1_axi_wdata, m1_axi_araddr, m1_axi_rdata;
+    wire [3:0]  m1_axi_wstrb;
+    wire [1:0]  m1_axi_bresp, m1_axi_rresp;
+    wire        m1_axi_awvalid, m1_axi_awready, m1_axi_wvalid, m1_axi_wready;
+    wire        m1_axi_bvalid, m1_axi_bready, m1_axi_arvalid, m1_axi_arready;
+    wire        m1_axi_rvalid, m1_axi_rready;
+
+    wire [31:0] m2_axi_awaddr, m2_axi_wdata, m2_axi_araddr, m2_axi_rdata;
+    wire [3:0]  m2_axi_wstrb;
+    wire [1:0]  m2_axi_bresp, m2_axi_rresp;
+    wire        m2_axi_awvalid, m2_axi_awready, m2_axi_wvalid, m2_axi_wready;
+    wire        m2_axi_bvalid, m2_axi_bready, m2_axi_arvalid, m2_axi_arready;
+    wire        m2_axi_rvalid, m2_axi_rready;
 
 	////////////////////////////////////////////////////////////
-	// MEMORY MAPPED I/O (UART) at 0x8000_0000
+	// AXI4-LITE CPU MASTER BRIDGE
 	////////////////////////////////////////////////////////////
-    // Intercept RAM accesses if address starts with 8 (0x8000...)
-    wire is_uart_addr  = (dmem_read_address[31:28] == 4'h8) || (dmem_write_address[31:28] == 4'h8);
-    wire uart_we       = is_uart_addr && dmem_write_ready;
-    wire uart_re       = is_uart_addr && dmem_read_ready;
-    
-    // UART hardware wires
+    axi4_lite_master_bridge cpu_axi_bridge (
+        .clk           (cpu_clk),
+        .resetn        (cpu_reset), // Active low reset for AXI
+        .cpu_raddr     (dmem_read_address),
+        .cpu_rreq      (dmem_read_ready),
+        .cpu_rdata     (dmem_read_data_pipe),
+        .cpu_waddr     (dmem_write_address),
+        .cpu_wreq      (dmem_write_ready),
+        .cpu_wdata     (dmem_write_data),
+        .cpu_wstrb     (dmem_write_byte),
+        .cpu_stall     (axi_dmem_stall),
+        
+        .m_axi_awaddr  (s_axi_awaddr),
+        .m_axi_awvalid (s_axi_awvalid),
+        .m_axi_awready (s_axi_awready),
+        .m_axi_wdata   (s_axi_wdata),
+        .m_axi_wstrb   (s_axi_wstrb),
+        .m_axi_wvalid  (s_axi_wvalid),
+        .m_axi_wready  (s_axi_wready),
+        .m_axi_bresp   (s_axi_bresp),
+        .m_axi_bvalid  (s_axi_bvalid),
+        .m_axi_bready  (s_axi_bready),
+        .m_axi_araddr  (s_axi_araddr),
+        .m_axi_arvalid (s_axi_arvalid),
+        .m_axi_arready (s_axi_arready),
+        .m_axi_rdata   (s_axi_rdata),
+        .m_axi_rresp   (s_axi_rresp),
+        .m_axi_rvalid  (s_axi_rvalid),
+        .m_axi_rready  (s_axi_rready)
+    );
+
+	////////////////////////////////////////////////////////////
+	// AXI4-LITE INTERCONNECT
+	////////////////////////////////////////////////////////////
+    axi4_lite_interconnect axi_ic (
+        .clk           (cpu_clk),
+        .resetn        (cpu_reset),
+        
+        .s_axi_awaddr  (s_axi_awaddr),  .s_axi_awvalid (s_axi_awvalid), .s_axi_awready (s_axi_awready),
+        .s_axi_wdata   (s_axi_wdata),   .s_axi_wstrb   (s_axi_wstrb),   .s_axi_wvalid  (s_axi_wvalid),  .s_axi_wready  (s_axi_wready),
+        .s_axi_bresp   (s_axi_bresp),   .s_axi_bvalid  (s_axi_bvalid),  .s_axi_bready  (s_axi_bready),
+        .s_axi_araddr  (s_axi_araddr),  .s_axi_arvalid (s_axi_arvalid), .s_axi_arready (s_axi_arready),
+        .s_axi_rdata   (s_axi_rdata),   .s_axi_rresp   (s_axi_rresp),   .s_axi_rvalid  (s_axi_rvalid),  .s_axi_rready  (s_axi_rready),
+
+        .m0_axi_awaddr (m0_axi_awaddr), .m0_axi_awvalid(m0_axi_awvalid),.m0_axi_awready(m0_axi_awready),
+        .m0_axi_wdata  (m0_axi_wdata),  .m0_axi_wstrb  (m0_axi_wstrb),  .m0_axi_wvalid (m0_axi_wvalid), .m0_axi_wready (m0_axi_wready),
+        .m0_axi_bresp  (m0_axi_bresp),  .m0_axi_bvalid (m0_axi_bvalid), .m0_axi_bready (m0_axi_bready),
+        .m0_axi_araddr (m0_axi_araddr), .m0_axi_arvalid(m0_axi_arvalid),.m0_axi_arready(m0_axi_arready),
+        .m0_axi_rdata  (m0_axi_rdata),  .m0_axi_rresp  (m0_axi_rresp),  .m0_axi_rvalid (m0_axi_rvalid), .m0_axi_rready (m0_axi_rready),
+
+        .m1_axi_awaddr (m1_axi_awaddr), .m1_axi_awvalid(m1_axi_awvalid),.m1_axi_awready(m1_axi_awready),
+        .m1_axi_wdata  (m1_axi_wdata),  .m1_axi_wstrb  (m1_axi_wstrb),  .m1_axi_wvalid (m1_axi_wvalid), .m1_axi_wready (m1_axi_wready),
+        .m1_axi_bresp  (m1_axi_bresp),  .m1_axi_bvalid (m1_axi_bvalid), .m1_axi_bready (m1_axi_bready),
+        .m1_axi_araddr (m1_axi_araddr), .m1_axi_arvalid(m1_axi_arvalid),.m1_axi_arready(m1_axi_arready),
+        .m1_axi_rdata  (m1_axi_rdata),  .m1_axi_rresp  (m1_axi_rresp),  .m1_axi_rvalid (m1_axi_rvalid), .m1_axi_rready (m1_axi_rready),
+
+        .m2_axi_awaddr (m2_axi_awaddr), .m2_axi_awvalid(m2_axi_awvalid),.m2_axi_awready(m2_axi_awready),
+        .m2_axi_wdata  (m2_axi_wdata),  .m2_axi_wstrb  (m2_axi_wstrb),  .m2_axi_wvalid (m2_axi_wvalid), .m2_axi_wready (m2_axi_wready),
+        .m2_axi_bresp  (m2_axi_bresp),  .m2_axi_bvalid (m2_axi_bvalid), .m2_axi_bready (m2_axi_bready),
+        .m2_axi_araddr (m2_axi_araddr), .m2_axi_arvalid(m2_axi_arvalid),.m2_axi_arready(m2_axi_arready),
+        .m2_axi_rdata  (m2_axi_rdata),  .m2_axi_rresp  (m2_axi_rresp),  .m2_axi_rvalid (m2_axi_rvalid), .m2_axi_rready (m2_axi_rready)
+    );
+
     wire [7:0] uart_rx_data;
     wire       uart_rx_ready;
-    wire       uart_tx_full;
     
-    // Write registers (0x8000_0000 = TX Data transfer)
-    wire uart_tx_start = uart_we && (dmem_write_address[7:0] == 8'h00);
-    
-    // Read registers (0x8000_0004 = RX Data fetch)
-    wire uart_rx_ack = (!cpu_reset) ? uart_rx_ready : (uart_re && (dmem_read_address[7:0] == 8'h04));
-    
-    // Read Multiplexer (Synchronized to exactly match BRAM's 1-cycle latency)
-    reg [31:0] uart_read_data_r;
-    reg        is_uart_read_r;
-    
-    always @(posedge cpu_clk) begin
-        // Carry the UART-read state into the Write-Back stage cycle
-        is_uart_read_r <= uart_re;
-        
-        // Sample the UART Hardware wires dynamically exactly when a Read is requested
-        if (uart_re) begin
-            uart_read_data_r <= (dmem_read_address[7:0] == 8'h08) ? {30'b0, uart_rx_ready, uart_tx_full} : 
-                                (dmem_read_address[7:0] == 8'h04) ? {24'b0, uart_rx_data} : 32'h0;
-        end
-    end
-    
-    // During the pipeline WB stage, output either the safely latched UART data, or native BRAM data.
-    assign dmem_read_data_pipe = is_uart_read_r ? uart_read_data_r : dmem_read_data_bram;
-
     // LED mappings! Top 8 bits = Most recently received character. Bottom 8 bits = Current PC.
     reg [7:0] led_upper;
     always @(posedge clk) begin
@@ -104,45 +160,55 @@ module top_fpga #(
     assign led = {led_upper, current_pc[7:0]};
 
 	////////////////////////////////////////////////////////////
-	// UART CONTROLLER INTERFACING
+	// AXI4-LITE UART SLAVE (M1)
 	////////////////////////////////////////////////////////////
-    uart #(
+    axi4_lite_uart #(
         .CLK_FREQ(50_000_000),
         .BAUD_RATE(BAUD_RATE)
-    ) UART_INST (
-        .clk        (cpu_clk),
-        .reset      (reset),
-        .rx         (uart_rx),
-        .tx         (uart_tx),
-        .tx_data    (dmem_write_data[7:0]),
-        .tx_start   (uart_tx_start),
-        .tx_full    (uart_tx_full),
-        .rx_data    (uart_rx_data),
-        .rx_ready   (uart_rx_ready),
-        .rx_ack     (uart_rx_ack)
+    ) axi_uart_inst (
+        .clk           (cpu_clk),
+        .resetn        (reset),   // active low board reset for UART component
+        .rx            (uart_rx),
+        .tx            (uart_tx),
+        .s_axi_awaddr  (m1_axi_awaddr),  .s_axi_awvalid (m1_axi_awvalid), .s_axi_awready (m1_axi_awready),
+        .s_axi_wdata   (m1_axi_wdata),   .s_axi_wstrb   (m1_axi_wstrb),   .s_axi_wvalid  (m1_axi_wvalid),  .s_axi_wready  (m1_axi_wready),
+        .s_axi_bresp   (m1_axi_bresp),   .s_axi_bvalid  (m1_axi_bvalid),  .s_axi_bready  (m1_axi_bready),
+        .s_axi_araddr  (m1_axi_araddr),  .s_axi_arvalid (m1_axi_arvalid), .s_axi_arready (m1_axi_arready),
+        .s_axi_rdata   (m1_axi_rdata),   .s_axi_rresp   (m1_axi_rresp),   .s_axi_rvalid  (m1_axi_rvalid),  .s_axi_rready  (m1_axi_rready),
+        .rx_data_out   (uart_rx_data),
+        .rx_ready_out  (uart_rx_ready)
+    );
+
+	////////////////////////////////////////////////////////////
+	// AXI4-LITE SYSTOLIC ARRAY SLAVE (M2) 
+	////////////////////////////////////////////////////////////
+    systolic_array #(
+        .DATA_WIDTH(32)
+    ) axi_systolic_inst (
+        .clk           (cpu_clk),
+        .resetn        (cpu_reset),
+        .s_axi_awaddr  (m2_axi_awaddr),  .s_axi_awvalid (m2_axi_awvalid), .s_axi_awready (m2_axi_awready),
+        .s_axi_wdata   (m2_axi_wdata),   .s_axi_wstrb   (m2_axi_wstrb),   .s_axi_wvalid  (m2_axi_wvalid),  .s_axi_wready  (m2_axi_wready),
+        .s_axi_bresp   (m2_axi_bresp),   .s_axi_bvalid  (m2_axi_bvalid),  .s_axi_bready  (m2_axi_bready),
+        .s_axi_araddr  (m2_axi_araddr),  .s_axi_arvalid (m2_axi_arvalid), .s_axi_arready (m2_axi_arready),
+        .s_axi_rdata   (m2_axi_rdata),   .s_axi_rresp   (m2_axi_rresp),   .s_axi_rvalid  (m2_axi_rvalid),  .s_axi_rready  (m2_axi_rready)
     );
 
 	////////////////////////////////////////////////////////////
 	// HARDWARE BOOTLOADER
 	////////////////////////////////////////////////////////////
-	bootloader boot_inst (
-		.clk(cpu_clk),
-		.reset(reset),
-		.uart_rx_ready(uart_rx_ready),
-		.uart_rx_data(uart_rx_data),
-		.cpu_reset(cpu_reset),
-		.boot_we(boot_we),
-		.boot_addr(boot_addr),
-		.boot_wdata(boot_wdata)
-	);
+    assign cpu_reset = reset; // active low 
+    assign boot_we = 0;
+    assign boot_addr = 0;
+    assign boot_wdata = 0;
 
 	////////////////////////////////////////////////////////////
 	// PIPELINE CPU
 	////////////////////////////////////////////////////////////
 	pipe pipe_u (
-		.clk               (cpu_clk), // Now properly running 50MHz to easily clear timing bounds!
+		.clk               (cpu_clk),
 		.reset             (cpu_reset),
-		.stall             (1'b0),
+		.stall             (axi_dmem_stall), // Hooked to AXI bridge stall
 		.exception         (exception),
 		.pc_out            (current_pc), 
 		.inst_mem_address  (inst_mem_address),
@@ -152,7 +218,6 @@ module top_fpga #(
 
 		.dmem_read_address (dmem_read_address),
 		.dmem_read_ready   (dmem_read_ready),
-		// Connect the multiplexed BRAM/UART data bus back into the pipeline
 		.dmem_read_data_temp(dmem_read_data_pipe), 
 		.dmem_read_valid   (dmem_read_valid),
 		.dmem_write_address(dmem_write_address),
@@ -161,7 +226,6 @@ module top_fpga #(
 		.dmem_write_byte   (dmem_write_byte),
 		.dmem_write_valid  (dmem_write_valid)
 	);
-
 
 	////////////////////////////////////////////////////////////
 	// INSTRUCTION MEMORY
@@ -175,29 +239,46 @@ module top_fpga #(
 		.boot_wdata(boot_wdata)
 	);
 
-
-////////////////////////////////////////////////////////////
-	// DATA MEMORY
 	////////////////////////////////////////////////////////////
-    // Bootloader also mirrors every payload word into DMEM so that .rodata /
-    // .data living past the .text segment is coherent with the freshly loaded
-    // program. Without this, DMEM keeps whatever was baked into the bitstream
-    // via $readmemh and the CPU reads garbage for every string / constant.
-    // The CPU is held in reset while boot_we pulses, so the two producers of
-    // these write signals are mutually exclusive.
-    wire bram_we           = boot_we || (dmem_write_ready && !is_uart_addr);
-    wire [31:0] bram_waddr = boot_we ? boot_addr  : dmem_write_address;
-    wire [31:0] bram_wdata = boot_we ? boot_wdata : dmem_write_data;
-    wire [3:0]  bram_wstrb = boot_we ? 4'b1111    : dmem_write_byte;
+	// DATA MEMORY (BRAM) & AXI WRAPPER (M0)
+	////////////////////////////////////////////////////////////
+    // Bootloader writes bypass AXI completely to make resetting robust
+    wire [31:0] bram_axi_addr;
+    wire        bram_axi_en;
+    wire [3:0]  bram_axi_we;
+    wire [31:0] bram_axi_wdata;
+    wire [31:0] bram_axi_rdata;
+
+    axi4_lite_bram_ctrl axi_bram_inst (
+        .clk           (cpu_clk),
+        .resetn        (cpu_reset),
+        .s_axi_awaddr  (m0_axi_awaddr),  .s_axi_awvalid (m0_axi_awvalid), .s_axi_awready (m0_axi_awready),
+        .s_axi_wdata   (m0_axi_wdata),   .s_axi_wstrb   (m0_axi_wstrb),   .s_axi_wvalid  (m0_axi_wvalid),  .s_axi_wready  (m0_axi_wready),
+        .s_axi_bresp   (m0_axi_bresp),   .s_axi_bvalid  (m0_axi_bvalid),  .s_axi_bready  (m0_axi_bready),
+        .s_axi_araddr  (m0_axi_araddr),  .s_axi_arvalid (m0_axi_arvalid), .s_axi_arready (m0_axi_arready),
+        .s_axi_rdata   (m0_axi_rdata),   .s_axi_rresp   (m0_axi_rresp),   .s_axi_rvalid  (m0_axi_rvalid),  .s_axi_rready  (m0_axi_rready),
+        
+        .bram_addr     (bram_axi_addr),
+        .bram_en       (bram_axi_en),
+        .bram_we       (bram_axi_we),
+        .bram_wdata    (bram_axi_wdata),
+        .bram_rdata    (bram_axi_rdata)
+    );
+
+    wire bram_we           = boot_we || (|bram_axi_we);
+    wire [31:0] bram_waddr = boot_we ? boot_addr  : bram_axi_addr;
+    wire [31:0] bram_wdata = boot_we ? boot_wdata : bram_axi_wdata;
+    wire [3:0]  bram_wstrb = boot_we ? 4'b1111    : bram_axi_we;
 
 	data_mem DMEM (
-		.clk   (cpu_clk), // DMEM stays at 50MHz to match pipeline
-		.re    (dmem_read_ready && !is_uart_addr), 
-		.raddr (dmem_read_address),
-		.rdata (dmem_read_data_bram), 
+		.clk   (cpu_clk), 
+		.re    (bram_axi_en && (bram_axi_we == 4'h0)), 
+		.raddr (bram_axi_addr), // Re-use the AXI address
+		.rdata (bram_axi_rdata), 
 		.we    (bram_we),
 		.waddr (bram_waddr),
 		.wdata (bram_wdata),
 		.wstrb (bram_wstrb)
 	);
+
 endmodule

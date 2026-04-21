@@ -18,8 +18,8 @@ void print_char(char c) {
     
     // SOFTWARE WORKAROUND: Force a fixed delay to prevent FIFO overflow.
     // At 50MHz, 115200 baud requires ~434 cycles per bit -> ~4340 cycles per char.
-    // This loop takes > 10,000 cycles, ensuring the UART pops the byte before we send another.
-    for (volatile int delay = 0; delay < 2000; delay++);
+    // Delay calibrated for 5MHz baud simulation (100 cycles/char at tb_soc_run rate)
+    for (volatile int delay = 0; delay < 200; delay++);
 }
 
 void print_string(const char* str) {

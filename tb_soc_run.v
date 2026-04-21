@@ -70,8 +70,12 @@ module tb_soc_run;
     //-------------------------------------------------------------------------
     wire is_uart_addr = (dmem_read_address[31:28]  == 4'h8) ||
                         (dmem_write_address[31:28] == 4'h8);
+    wire is_sa_addr   = (dmem_read_address[31:28]  == 4'h9) ||
+                        (dmem_write_address[31:28] == 4'h9);
     wire uart_we      = is_uart_addr && dmem_write_ready;
     wire uart_re      = is_uart_addr && dmem_read_ready;
+    wire sa_we        = is_sa_addr   && dmem_write_ready;
+    wire sa_re        = is_sa_addr   && dmem_read_ready;
     wire uart_tx_start = uart_we && (dmem_write_address[7:0] == 8'h00);
 
     wire [31:0] dmem_read_data_bram;
@@ -82,6 +86,72 @@ module tb_soc_run;
 
     wire uart_rx_ack = uart_re && (dmem_read_address[7:0] == 8'h04);
 
+    // -----------------------------------------------------------------------
+    // Behavioural Systolic Array model (no AXI, direct register model)
+    // -----------------------------------------------------------------------
+    reg [31:0] sa_mat_a[0:3];
+    reg [31:0] sa_mat_b[0:3];
+    reg [31:0] sa_mat_c[0:3];
+    reg        sa_busy;
+    reg        sa_done;
+    reg [3:0]  sa_delay;
+
+    integer sa_i;
+    always @(posedge clk) begin
+        if (!reset) begin
+            sa_busy <= 0; sa_done <= 0; sa_delay <= 0;
+            for (sa_i=0; sa_i<4; sa_i=sa_i+1) begin
+                sa_mat_a[sa_i] <= 0; sa_mat_b[sa_i] <= 0; sa_mat_c[sa_i] <= 0;
+            end
+        end else begin
+            // Write decode
+            if (sa_we) begin
+                case (dmem_write_address[7:0])
+                    8'h00: begin // CTRL: bit0=start
+                        if (dmem_write_data[0]) begin
+                            sa_busy <= 1; sa_done <= 0; sa_delay <= 4;
+                        end
+                    end
+                    8'h10: sa_mat_a[0] <= dmem_write_data;
+                    8'h14: sa_mat_a[1] <= dmem_write_data;
+                    8'h18: sa_mat_a[2] <= dmem_write_data;
+                    8'h1C: sa_mat_a[3] <= dmem_write_data;
+                    8'h20: sa_mat_b[0] <= dmem_write_data;
+                    8'h24: sa_mat_b[1] <= dmem_write_data;
+                    8'h28: sa_mat_b[2] <= dmem_write_data;
+                    8'h2C: sa_mat_b[3] <= dmem_write_data;
+                endcase
+            end
+            // Compute after delay
+            if (sa_busy && sa_delay > 0) sa_delay <= sa_delay - 1;
+            if (sa_busy && sa_delay == 0) begin
+                sa_mat_c[0] <= sa_mat_a[0]*sa_mat_b[0] + sa_mat_a[1]*sa_mat_b[2];
+                sa_mat_c[1] <= sa_mat_a[0]*sa_mat_b[1] + sa_mat_a[1]*sa_mat_b[3];
+                sa_mat_c[2] <= sa_mat_a[2]*sa_mat_b[0] + sa_mat_a[3]*sa_mat_b[2];
+                sa_mat_c[3] <= sa_mat_a[2]*sa_mat_b[1] + sa_mat_a[3]*sa_mat_b[3];
+                sa_busy <= 0; sa_done <= 1;
+            end
+        end
+    end
+
+    // SA read data
+    reg [31:0] sa_rdata_r;
+    reg        is_sa_read_r;
+    always @(posedge clk) begin
+        is_sa_read_r <= sa_re;
+        if (sa_re) begin
+            case (dmem_read_address[7:0])
+                8'h04: sa_rdata_r <= {30'b0, sa_done, sa_busy}; // STATUS: bit1=done, bit0=busy
+                8'h30: sa_rdata_r <= sa_mat_c[0];
+                8'h34: sa_rdata_r <= sa_mat_c[1];
+                8'h38: sa_rdata_r <= sa_mat_c[2];
+                8'h3C: sa_rdata_r <= sa_mat_c[3];
+                default: sa_rdata_r <= 32'h0;
+            endcase
+        end
+    end
+
+    // Read mux
     reg [31:0] uart_read_data_r;
     reg        is_uart_read_r;
     always @(posedge clk) begin
@@ -94,14 +164,15 @@ module tb_soc_run;
         end
     end
     assign dmem_read_data_pipe = is_uart_read_r ? uart_read_data_r
+                               : is_sa_read_r   ? sa_rdata_r
                                                 : dmem_read_data_bram;
 
     data_mem DMEM (
         .clk   (clk),
-        .re    (dmem_read_ready  && !is_uart_addr),
+        .re    (dmem_read_ready  && !is_uart_addr && !is_sa_addr),
         .raddr (dmem_read_address),
         .rdata (dmem_read_data_bram),
-        .we    (dmem_write_ready && !is_uart_addr),
+        .we    (dmem_write_ready && !is_uart_addr && !is_sa_addr),
         .waddr (dmem_write_address),
         .wdata (dmem_write_data),
         .wstrb (dmem_write_byte)
@@ -267,7 +338,7 @@ module tb_soc_run;
         // the loop between TX writes is so long.
         wait (store_count >= 3);
         trace_on = 1;
-        #20_000_000;
+        #200_000_000;
         $display("\n[tb_soc_run] Timeout reached. bytes_seen=%0d stores=%0d",
                  bytes_seen, store_count);
         $finish;

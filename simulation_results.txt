@@ -1,6 +1,14 @@
-=== STARTING MULT/DIV TESTS ===
-DIV ( 7 / 3):           7,           3 -> Result:           2 (0x00000002)
-DIV (-8 / 3):          -8,           3 -> Result:          -2 (0xfffffffe)
-DIV (-8 / -3):          -8,          -3 -> Result:           2 (0x00000002)
+time:               0 ,result =        0
+next_pc = 00000000
+next_pc = 00000004
+next_pc = 00000008
+next_pc = 0000000c
+next_pc = 00000010
+next_pc = 00000014
+next_pc = 00000018
+next_pc = 0000001c
+next_pc = 00000020
+next_pc = 00000024
+next_pc = 00000028
 All instructions are Fetched
 next_pc = 00000000
