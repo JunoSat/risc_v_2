@@ -87,16 +87,16 @@ module tb_full_soc;
 
     always #5 clk = ~clk;
 
-    // Monitor logic to cleanly print when AXI traffic is happening
+    // Monitor logic to cleanly print when internal Systolic AXI traffic is happening
     always @(posedge clk) begin
-        if (m_axi_awvalid && m_axi_awready) begin
-            $display("[AXI-WRITE Req] Time %t | Addr: %h, Data: %h", $time, m_axi_awaddr, m_axi_wdata);
+        if (SOC_CORE.sys_awvalid && SOC_CORE.sys_awready) begin
+            $display("[SYS-WRITE Req] Time %t | Addr: %h, Data: %d", $time, SOC_CORE.sys_awaddr, SOC_CORE.sys_wdata);
         end
-        if (m_axi_arvalid && m_axi_arready) begin
-            $display("[AXI-READ Req]  Time %t | Addr: %h", $time, m_axi_araddr);
+        if (SOC_CORE.sys_arvalid && SOC_CORE.sys_arready) begin
+            $display("[SYS-READ Req]  Time %t | Addr: %h", $time, SOC_CORE.sys_araddr);
         end
-        if (m_axi_rvalid && m_axi_rready) begin
-            $display("[AXI-READ Done] Time %t | Returning Data: %h", $time, m_axi_rdata);
+        if (SOC_CORE.sys_rvalid && SOC_CORE.sys_rready) begin
+            $display("[SYS-READ Done] Time %t | Returning Data: %d", $time, SOC_CORE.sys_rdata_in);
         end
     end
 
