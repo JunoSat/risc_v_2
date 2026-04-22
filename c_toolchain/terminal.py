@@ -56,7 +56,7 @@ for i in range(0, len(payload), chunk_size):
     # Wait 5ms between chunks to let the FPGA bootloader catch up
     time.sleep(0.005)
 
-time.sleep(10.0)            # Give the FPGA 1 full second to finish echoing the file
+time.sleep(2.0)            # Give the FPGA 1 full second to finish echoing the file
 # ser.reset_input_buffer()
 
 print("Payload dispatched successfully. Listening to FPGA output...")
