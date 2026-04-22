@@ -1,0 +1,79 @@
+
+--- NEW SESSION ---
+               ALL TESTS DONE
+==============================================
+
+--- NEW SESSION ---
+
+==============================================
+ RISC-V SoC Validation: CORDIC & SYSTOLIC
+==============================================
+
+--- Starting CORDIC Test ---
+Testing PI/2 Angle: 0x0x1921FB54
+Sine   = 0
+Cosine = 0
+
+Testing PI/4 Angle: 0x0x0C90FDAB
+189812531
+Cosine = 189812530
+
+--- Starting Systolic Array Test ---
+1. Loading Identity Matrix into Weights (4x4)...
+2. Feeding input activations: [10, 20, 30, 40]...
+3. Pulsing the SYS_STEP 7 times (~2N-1 Latency for 4x4 array)...
+4. Reading hardware output matrix results...
+0
+Result [1] = 0
+Result [2] = 40
+Result [3] = 40
+==> SYSTOLIC HARDWARE MISMATCH! <==
+
+==============================================
+               ALL TESTS DONE
+==============================================
+
+--- NEW SESSION ---
+
+==============================================
+ RISC-V SoC Validation: CORDIC & SYSTOLIC
+==============================================
+
+--- Starting CORDIC Test ---
+Testing PI/2 Angle: 0x0x1921FB54
+Sine   = 0
+Cosine = 0
+
+Testing PI/4 Angle: 0x0x0C90FDAB
+Sine   = 189812530
+Cosine = 189812530
+
+Testing PI/6 Angle: 0x0x0860A91C
+134217730
+Cosine = 232471924
+
+--- Starting Systolic Array Test ---
+1. Loading Identity Matrix into Weights (4x4)...
+2. Feeding input activations: [10, 20, 30, 40]...
+3. Pulsing the SYS_STEP 7 times and dynamically capturing Valid diagonals...
+
+--- NEW SESSION ---
+
+==============================================
+ RISC-V SoC Validation: SYSTOLIC
+==============================================
+
+--- Starting Systolic Array Test ---
+1. Loading Identity Matrix into Weights (4x4)...
+2. Feeding input activations: [10, 20, 30, 40]...
+3. Pulsing the SYS_STEP 6 more times (Flushing pipeline)...
+4. Reading hardware output matrix results...
+0
+Result [1] = 0
+Result [2] = 0
+Result [3] = 0
+==> SYSTOLIC HARDWARE MISMATCH! <==
+
+==============================================
+               ALL TESTS DONE
+==============================================
