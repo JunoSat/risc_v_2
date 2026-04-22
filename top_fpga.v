@@ -9,29 +9,29 @@ module top_fpga #(
 	input  wire reset,  	// active-low reset
 	input  wire uart_rx,    // UART Receive line
 	output wire uart_tx,    // UART Transmit line
-	output [15:0] led,       // Diagnostic LEDs
-    
-    // AXI4-Lite Master Interface (Auto-Inferred by Vivado if names match exactly)
-    output wire [31:0] m_axi_awaddr,
-    output wire [2:0]  m_axi_awprot,
-    output wire        m_axi_awvalid,
-    input  wire        m_axi_awready,
-    output wire [31:0] m_axi_wdata,
-    output wire [3:0]  m_axi_wstrb,
-    output wire        m_axi_wvalid,
-    input  wire        m_axi_wready,
-    input  wire [1:0]  m_axi_bresp,
-    input  wire        m_axi_bvalid,
-    output wire        m_axi_bready,
-    output wire [31:0] m_axi_araddr,
-    output wire [2:0]  m_axi_arprot,
-    output wire        m_axi_arvalid,
-    input  wire        m_axi_arready,
-    input  wire [31:0] m_axi_rdata,
-    input  wire [1:0]  m_axi_rresp,
-    input  wire        m_axi_rvalid,
-    output wire        m_axi_rready
+	output wire [15:0] led       // Diagnostic LEDs
 );
+
+    // AXI4-Lite Internal Wires for CORDIC
+    wire [31:0] m_axi_awaddr;
+    wire [2:0]  m_axi_awprot;
+    wire        m_axi_awvalid;
+    wire        m_axi_awready;
+    wire [31:0] m_axi_wdata;
+    wire [3:0]  m_axi_wstrb;
+    wire        m_axi_wvalid;
+    wire        m_axi_wready;
+    wire [1:0]  m_axi_bresp;
+    wire        m_axi_bvalid;
+    wire        m_axi_bready;
+    wire [31:0] m_axi_araddr;
+    wire [2:0]  m_axi_arprot;
+    wire        m_axi_arvalid;
+    wire        m_axi_arready;
+    wire [31:0] m_axi_rdata;
+    wire [1:0]  m_axi_rresp;
+    wire        m_axi_rvalid;
+    wire        m_axi_rready;
 
 	wire [31:0] current_pc;
 	wire exception;
@@ -135,7 +135,7 @@ module top_fpga #(
 	// UART CONTROLLER INTERFACING
 	////////////////////////////////////////////////////////////
     uart #(
-        .CLK_FREQ(50_000_000),
+        .CLK_FREQ(100_000_000),
         .BAUD_RATE(BAUD_RATE)
     ) UART_INST (
         .clk        (cpu_clk),
@@ -199,6 +199,31 @@ module top_fpga #(
         .m_axi_rresp   (m_axi_rresp),
         .m_axi_rvalid  (m_axi_rvalid),
         .m_axi_rready  (m_axi_rready)
+    );
+
+    // Instantiate the CORDIC Logic directly inside the Top Level!
+    axi_cordic_slave HW_CORDIC (
+        .clk          (cpu_clk),
+        .reset        (reset),
+        .s_axi_awaddr (m_axi_awaddr),
+        .s_axi_awprot (m_axi_awprot),
+        .s_axi_awvalid(m_axi_awvalid),
+        .s_axi_awready(m_axi_awready),
+        .s_axi_wdata  (m_axi_wdata),
+        .s_axi_wstrb  (m_axi_wstrb),
+        .s_axi_wvalid (m_axi_wvalid),
+        .s_axi_wready (m_axi_wready),
+        .s_axi_bresp  (m_axi_bresp),
+        .s_axi_bvalid (m_axi_bvalid),
+        .s_axi_bready (m_axi_bready),
+        .s_axi_araddr (m_axi_araddr),
+        .s_axi_arprot (m_axi_arprot),
+        .s_axi_arvalid(m_axi_arvalid),
+        .s_axi_arready(m_axi_arready),
+        .s_axi_rdata  (m_axi_rdata),
+        .s_axi_rresp  (m_axi_rresp),
+        .s_axi_rvalid (m_axi_rvalid),
+        .s_axi_rready (m_axi_rready)
     );
 
 	////////////////////////////////////////////////////////////

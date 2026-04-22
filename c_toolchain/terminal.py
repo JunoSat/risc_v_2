@@ -56,15 +56,14 @@ for i in range(0, len(payload), chunk_size):
     # Wait 5ms between chunks to let the FPGA bootloader catch up
     time.sleep(0.005)
 
-time.sleep(1.0)            # Give the FPGA 1 full second to finish echoing the file
+time.sleep(10.0)            # Give the FPGA 1 full second to finish echoing the file
 # ser.reset_input_buffer()
 
-print("Payload dispatched successfully. Dropping into interactive shell...")
+print("Payload dispatched successfully. Listening to FPGA output...")
 print("==========================================================")
-print("             FPGA HARDWARE CALCULATOR                     ")
+print("             FPGA VERIFICATION TERMINAL                   ")
 print("==========================================================")
-print("Type expressions (e.g. 'add 5.2 3.1')")
-print("All log output will be saved to: ", log_file_path)
+print("Waiting for test results from FPGA...\n(Press Ctrl+C to exit when finished)")
 
 # ser.reset_input_buffer()
 

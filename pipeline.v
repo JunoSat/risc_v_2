@@ -238,9 +238,9 @@ module pipe #(
         .ex_mem_is_fp     (mem_fp_reg_write), // <--- ADD THIS
         .mem_wb_is_fp     (wb_fp_reg_write),  // <--- ADD THIS
         
-        .ex_mem_reg_write (mem_alu_to_reg),
+        .ex_mem_reg_write (mem_alu_to_reg | mem_fp_reg_write),
         .ex_mem_rd        (mem_rd),
-        .mem_wb_reg_write (wb_alu_to_reg),
+        .mem_wb_reg_write (wb_alu_to_reg | wb_fp_reg_write),
         .mem_wb_rd        (wb_rd),
         
         .branch_taken     (branch_taken),
@@ -297,7 +297,7 @@ module pipe #(
         .clk               (clk),
         .reset             (reset),
         .stall             (stage_stall_id),
-        .flush             (flush_if_haz),
+        .flush             (flush_if_haz & ~stall),
         .if_pc             (if_pc_out),
         .inst_mem_read_data(inst_mem_read_data),
         .inst_mem_is_valid (inst_mem_is_valid),
@@ -339,7 +339,7 @@ module pipe #(
         .clk             (clk),
         .reset           (reset),
         .stall           (stage_stall_id),
-        .flush           (flush_id_haz),
+        .flush           (flush_id_haz & ~stall),
         
         .pc_i            (id_pc),
         .immediate_i     (id_immediate),
@@ -475,7 +475,7 @@ module pipe #(
         .mem_to_reg_i   (ex_mem_to_reg),
         .alu_to_reg_i   (ex_alu_to_reg),
         .stall          (stage_stall_ex),
-        .flush          (stage_flush_ex),
+        .flush          (stage_flush_ex & ~stall),
         
         .csr_we_i       (ex_csr_we),
         .csr_wdata_i    (ex_csr_wdata),

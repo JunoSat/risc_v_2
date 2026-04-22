@@ -1,11 +1,11 @@
 CC = riscv-none-elf-gcc
 OBJCOPY = riscv-none-elf-objcopy
 
-CFLAGS = -O2 -march=rv32imf -mabi=ilp32 -ffp-contract=off -ffreestanding -nostdlib -mcmodel=medany -Wl,--no-warn-rwx-segments
+CFLAGS = -O2 -march=rv32imf -mabi=ilp32 -ffp-contract=off -ffreestanding -nostdlib -mcmodel=medany -Wl,--no-warn-rwx-segments -Ic_toolchain
 
 # Default values if not provided by user
 FILE ?= c_toolchain/main.c
-COM ?= COM3
+COM ?= COM4
 
 # The bare-metal environment needs the initialization script and utility functions
 SRCS = c_toolchain/start.S $(FILE) c_toolchain/util.c c_toolchain/workload_alu.c
