@@ -162,18 +162,8 @@ module axi_systolic_4x4 #(
     end
     
     // -----------------------------------------------------------------------
-    // Step Counter + Output Auto-Latch
-    // 
-    // The systolic array results stream out serially - each column's result
-    // is only valid for exactly ONE clock cycle as it exits PE[3][col].
-    // Column j result is valid AFTER the (4+j)th step (0-indexed).
-    //
-    // At step trigger N (step_cnt == N before increment), the psum_out wires
-    // hold the result from step N-1's computation (non-blocking Verilog semantics).
-    // So we latch col j when step_cnt == 4+j (one cycle after the column's result arrived).
+    // Systolic Array Core + Output Latching
     // -----------------------------------------------------------------------
-    reg [3:0]  step_cnt;           // Counts total triggers since last activation write
-    reg [31:0] out_r [0:3];        // Stable output registers readable by the CPU
     wire [31:0] psum_out_0, psum_out_1, psum_out_2, psum_out_3;
     
     systolic_array_4x4 #(
@@ -191,24 +181,33 @@ module axi_systolic_4x4 #(
         .psum_out_0(psum_out_0), .psum_out_1(psum_out_1), .psum_out_2(psum_out_2), .psum_out_3(psum_out_3)
     );
 
+    // Sample psum_out one clock after each step_trigger (PEs have committed).
+    // Col j exits PE[3][j] after the (4+j)th step trigger (0-indexed).
+    // We see that result on psum_out one clock later, at the (4+j)th step_trigger_d pulse.
+    // Counter tracks step_trigger_d pulses; latch col j at count 4+j.
+    reg [31:0] out_r [0:3];
+    reg step_trigger_d;
+    reg [3:0] out_cnt;
+
     always @(posedge clk) begin
         if (!reset) begin
-            step_cnt <= 0;
+            step_trigger_d <= 0;
+            out_cnt <= 0;
             out_r[0] <= 0; out_r[1] <= 0; out_r[2] <= 0; out_r[3] <= 0;
-        end else if (step_trigger) begin
-            step_cnt <= step_cnt + 1;
-            // psum_out[j] holds step (step_cnt)'s result at this clock edge
-            // (non-blocking: PE regs haven't updated yet, so we see last cycle's value)
-            // Col j result exits PE[3][j] at steps 4+j, so latch it when step_cnt==4+j
-            case (step_cnt)
-                4'd4: out_r[0] <= psum_out_0;
-                4'd5: out_r[1] <= psum_out_1;
-                4'd6: out_r[2] <= psum_out_2;
-                4'd7: begin
-                    out_r[3] <= psum_out_3;
-                    step_cnt <= 0;  // Auto-reset for next computation
-                end
-            endcase
+        end else begin
+            step_trigger_d <= step_trigger;
+            if (step_trigger_d) begin
+                out_cnt <= out_cnt + 1;
+                case (out_cnt)
+                    4'd3: out_r[0] <= psum_out_0;
+                    4'd4: out_r[1] <= psum_out_1;
+                    4'd5: out_r[2] <= psum_out_2;
+                    4'd6: begin
+                        out_r[3] <= psum_out_3;
+                        out_cnt  <= 0;
+                    end
+                endcase
+            end
         end
     end
 
@@ -234,7 +233,6 @@ module axi_systolic_4x4 #(
                     weight_reg[s_axi_awaddr[7:0] >> 2] <= s_axi_wdata;
                 end else if (s_axi_awaddr[7:0] >= 8'h40 && s_axi_awaddr[7:0] <= 8'h4C) begin
                     act_reg[(s_axi_awaddr[7:0] - 8'h40) >> 2] <= s_axi_wdata;
-                    step_cnt <= 0;  // New activation loaded = start of a new computation
                 end else if (s_axi_awaddr[7:0] == 8'h50) begin
                     step_trigger <= 1;
                 end
