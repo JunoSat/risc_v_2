@@ -67,6 +67,37 @@ module tb_full_soc;
 
     always #5 clk = ~clk;
 
+    // --- SIMULATION UART RECEIVER ---
+    // Decodes the uart_tx pin and prints to the terminal
+    reg [7:0] rx_byte;
+    reg [31:0] baud_count;
+    reg [3:0] bit_count;
+    reg rx_active = 0;
+    
+    always @(posedge clk) begin
+        if (reset) begin 
+            // Wait for start bit (tx drops to 0)
+            if (!rx_active && uart_tx == 0) begin
+                rx_active <= 1;
+                baud_count <= 434; // Wait half a bit period to sample center (868 / 2)
+                bit_count <= 0;
+            end else if (rx_active) begin
+                if (baud_count == 0) begin
+                    baud_count <= 868; // Reset for next full bit period
+                    if (bit_count == 8) begin
+                        rx_active <= 0;
+                        $write("%c", rx_byte); // Print the character!
+                    end else begin
+                        rx_byte <= {uart_tx, rx_byte[7:1]}; // Shift in data
+                        bit_count <= bit_count + 1;
+                    end
+                end else begin
+                    baud_count <= baud_count - 1;
+                end
+            end
+        end
+    end
+
     // PC Monitor - print PC every 10000 ns (1000 cycles)
     always @(posedge clk) begin
         if ($time % 100000 == 5000)

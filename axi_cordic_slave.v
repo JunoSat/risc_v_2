@@ -110,18 +110,21 @@ module axi_cordic_slave (
             s_axi_arready <= 0;
             s_axi_rvalid <= 0;
         end else begin
+            // 1. Acknowledge address and latch it
             if (s_axi_arvalid && !s_axi_arready) begin
                 s_axi_arready <= 1;
-                read_addr_buf <= s_axi_araddr;
+                read_addr_buf <= s_axi_araddr; // Latch the address
             end else begin
                 s_axi_arready <= 0;
             end
             
-            if (s_axi_arready && s_axi_arvalid) begin
+            // 2. Assert valid and present data on the NEXT cycle
+            if (s_axi_arready) begin
                 s_axi_rvalid <= 1;
                 s_axi_rresp <= 2'b00;
                 
-                case (s_axi_araddr[7:0])
+                // CRITICAL: Use the latched buffer here, not s_axi_araddr!
+                case (read_addr_buf[7:0])
                     8'h04: s_axi_rdata <= {31'b0, latched_valid};
                     8'h08: s_axi_rdata <= cordic_sin_out;
                     8'h0C: s_axi_rdata <= cordic_cos_out;

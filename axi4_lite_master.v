@@ -55,11 +55,10 @@ module axi4_lite_master (
 
     // axi_busy logic: 
     // High during active transaction states (IDLE thru DONE).
-    // Drops to 0 in STATE_COOLDOWN (pipeline captures result) and STATE_WAIT (waiting for next instruction).
-    // NOTE: Do NOT add a combinatorial (STATE_IDLE && req_enable) term here!
-    // The pipeline gates mem_read_i with !stall (ex_mem_reg line), so asserting stall
-    // combinatorially in IDLE would suppress req_enable on the next posedge, creating a deadlock.
-    assign axi_busy = (state != STATE_IDLE) && (state != STATE_COOLDOWN) && (state != STATE_WAIT);
+    // Drops to 0 in STATE_COOLDOWN to allow the pipeline to capture the result.
+    // If a new request arrives while in IDLE, assert busy combinationally to stall the pipeline
+    // before the new memory operation escapes.
+    assign axi_busy = ((state != STATE_IDLE) && (state != STATE_COOLDOWN)) || (state == STATE_IDLE && req_enable);
 
     always @(posedge clk or negedge reset) begin
         if (!reset) begin
@@ -151,15 +150,6 @@ module axi4_lite_master (
 
                 STATE_COOLDOWN: begin
                     // axi_busy is 0 here. Pipeline advances at the end of this cycle.
-                    state <= STATE_WAIT;
-                end
-
-                STATE_WAIT: begin
-                    // Unconditionally return to IDLE.
-                    // By this point the pipeline has had one full cycle (COOLDOWN) to
-                    // advance the completed instruction from MEM to WB.  Whatever is
-                    // now in MEM is a genuinely new instruction — even if it happens
-                    // to target the same address (e.g. STATUS poll loop).
                     state <= STATE_IDLE;
                 end
 

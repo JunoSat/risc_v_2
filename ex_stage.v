@@ -148,7 +148,10 @@ module ex_stage (
     );
 
     // Combine trap sources, mapped tightly to the active math execute enable flag
-    assign ex_exception = (mult_div_en_i & mult_div_zero_fault) | (fp_en_i & fpu_zero_fault);
+    // NOTE: RISC-V spec mandates that integer divide-by-zero is NOT an exception.
+    // The mult_div module already returns the correct defined values (-1 for DIV, dividend for REM).
+    // Only FPU faults should trigger hardware exceptions.
+    assign ex_exception = (fp_en_i & fpu_zero_fault);
 
     // Hazard Unit freezes pipeline if we need to wait
     assign stall_ex_request = (mult_div_en_i && !mult_div_ready) || stall_fpu;

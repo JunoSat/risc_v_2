@@ -192,6 +192,7 @@ module axi_systolic_4x4 #(
     reg aw_en;
     reg w_en;
     reg [31:0] waddr_latched;
+    reg [31:0] read_addr_buf;
 
     // AXI WRITE logic
     always @(posedge clk) begin
@@ -253,27 +254,34 @@ module axi_systolic_4x4 #(
         end
     end
 
-    // AXI READ logic
+// AXI READ logic
     always @(posedge clk) begin
         if (!reset) begin
             s_axi_arready <= 0;
             s_axi_rvalid <= 0;
         end else begin
-            if (s_axi_arvalid && !s_axi_arready) s_axi_arready <= 1;
-            else s_axi_arready <= 0;
+            // 1. Acknowledge address and latch it
+            if (s_axi_arvalid && !s_axi_arready) begin
+                s_axi_arready <= 1;
+                read_addr_buf <= s_axi_araddr;
+            end else begin
+                s_axi_arready <= 0;
+            end
             
-            if (s_axi_arready && s_axi_arvalid) begin
+            // 2. Assert valid and present data on the NEXT cycle
+            if (s_axi_arready) begin
                 s_axi_rvalid <= 1;
                 s_axi_rresp <= 2'b00;
                 
-                // Decode read output register offset
-                if (s_axi_araddr[7:0] == 8'h60) s_axi_rdata <= final_out_0;
-                else if (s_axi_araddr[7:0] == 8'h64) s_axi_rdata <= final_out_1;
-                else if (s_axi_araddr[7:0] == 8'h68) s_axi_rdata <= final_out_2;
-                else if (s_axi_araddr[7:0] == 8'h6C) s_axi_rdata <= final_out_3;
+                // Decode from the latched buffer
+                if (read_addr_buf[7:0] == 8'h60) s_axi_rdata <= final_out_0;
+                else if (read_addr_buf[7:0] == 8'h64) s_axi_rdata <= final_out_1;
+                else if (read_addr_buf[7:0] == 8'h68) s_axi_rdata <= final_out_2;
+                else if (read_addr_buf[7:0] == 8'h6C) s_axi_rdata <= final_out_3;
                 else s_axi_rdata <= 32'h0;
-                
-            end else if (s_axi_rvalid && s_axi_rready) s_axi_rvalid <= 0;
+            end else if (s_axi_rvalid && s_axi_rready) begin
+                s_axi_rvalid <= 0;
+            end
         end
     end
 endmodule
