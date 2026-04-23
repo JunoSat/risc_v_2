@@ -9,7 +9,10 @@ module top_fpga #(
 	input  wire reset,  	// active-low reset
 	input  wire uart_rx,    // UART Receive line
 	output wire uart_tx,    // UART Transmit line
-	output wire [15:0] led       // Diagnostic LEDs
+	output wire [15:0] led, // Diagnostic LEDs
+    output wire [6:0] seg,  // 7-segment segments
+    output wire [7:0] an,   // 7-segment anodes
+    output wire dp          // 7-segment decimal point
 );
 
     // AXI4-Lite Internal Wires for CORDIC
@@ -132,13 +135,34 @@ module top_fpga #(
                                  is_systolic_read_r ? systolic_rdata_out :
                                  dmem_read_data_bram;
 
-    // LED mappings! Top 8 bits = Most recently received character. Bottom 8 bits = Current PC.
+    // A visible heartbeat counter for the LEDs
+    reg [31:0] blink_counter;
+    always @(posedge clk) begin
+        if (!reset)
+            blink_counter <= 0;
+        else
+            blink_counter <= blink_counter + 1;
+    end
+
+    // LED mappings! Top 8 bits = Most recently received character. 
+    // Bottom 8 bits = Visible binary counter (bits 29:22 of blink_counter).
     reg [7:0] led_upper;
     always @(posedge clk) begin
         if (uart_rx_ready)
             led_upper <= uart_rx_data;
     end
-    assign led = {led_upper, current_pc[7:0]};
+    assign led = {led_upper, blink_counter[29:22]};
+
+    // 7-Segment Display Controller
+    // Showing the current PC value on the 8 hex digits!
+    seven_seg SEVEN_SEG_INST (
+        .clk(clk),
+        .reset(reset),
+        .data(current_pc), 
+        .seg(seg),
+        .an(an),
+        .dp(dp)
+    );
 
 	////////////////////////////////////////////////////////////
 	// UART CONTROLLER INTERFACING
