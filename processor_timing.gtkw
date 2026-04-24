@@ -1,0 +1,82 @@
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*]
+[dumpfile] "C:\Users\purushottam\Desktop\hw\risc_v_2\timing_diagram.vcd"
+[timestart] 0
+[size] 1400 800
+[pos] -1 -1
+*-15.000000 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_timing_diagram.
+[treeopen] tb_timing_diagram.SOC_CORE.
+[treeopen] tb_timing_diagram.SOC_CORE.pipe_u.
+@28
+tb_timing_diagram.clk
+tb_timing_diagram.reset
+@200
+-IF Stage
+@22
+tb_timing_diagram.SOC_CORE.pipe_u.u_if_stage.pc_o[31:0]
+tb_timing_diagram.SOC_CORE.pipe_u.u_if_stage.inst_mem_address[31:0]
+@28
+tb_timing_diagram.SOC_CORE.pipe_u.u_if_stage.inst_mem_is_ready
+@22
+tb_timing_diagram.SOC_CORE.pipe_u.u_if_id_reg.inst_mem_read_data[31:0]
+@200
+-ID Stage
+@22
+tb_timing_diagram.SOC_CORE.pipe_u.u_id_stage.instruction_i[31:0]
+@28
+tb_timing_diagram.SOC_CORE.pipe_u.u_id_stage.alu
+tb_timing_diagram.SOC_CORE.pipe_u.u_id_stage.branch
+@22
+tb_timing_diagram.SOC_CORE.pipe_u.u_id_stage.src1_sel[4:0]
+tb_timing_diagram.SOC_CORE.pipe_u.u_id_stage.src2_sel[4:0]
+tb_timing_diagram.SOC_CORE.pipe_u.u_id_stage.dest_reg_sel[4:0]
+tb_timing_diagram.SOC_CORE.pipe_u.id_reg_rdata1[31:0]
+tb_timing_diagram.SOC_CORE.pipe_u.id_reg_rdata2[31:0]
+@200
+-EX Stage
+@22
+tb_timing_diagram.SOC_CORE.pipe_u.u_ex_stage.pc_i[31:0]
+tb_timing_diagram.SOC_CORE.pipe_u.u_ex_stage.ex_result[31:0]
+@200
+-MEM Stage
+@22
+tb_timing_diagram.SOC_CORE.pipe_u.u_mem_stage.dmem_read_address[31:0]
+tb_timing_diagram.SOC_CORE.pipe_u.u_mem_stage.dmem_write_address[31:0]
+tb_timing_diagram.SOC_CORE.pipe_u.u_mem_stage.dmem_write_data[31:0]
+@28
+tb_timing_diagram.SOC_CORE.pipe_u.u_mem_stage.dmem_read_ready
+tb_timing_diagram.SOC_CORE.pipe_u.u_mem_stage.dmem_write_ready
+@22
+tb_timing_diagram.SOC_CORE.pipe_u.dmem_read_data_temp[31:0]
+@200
+-WB Stage
+@22
+tb_timing_diagram.SOC_CORE.pipe_u.u_wb_stage.wb_result_o[31:0]
+@28
+tb_timing_diagram.SOC_CORE.pipe_u.wb_alu_to_reg
+@200
+-Hazard & Stalls
+@28
+tb_timing_diagram.SOC_CORE.pipe_u.stall_if_haz
+tb_timing_diagram.SOC_CORE.pipe_u.stall_id_haz
+tb_timing_diagram.SOC_CORE.pipe_u.stall_ex_haz
+tb_timing_diagram.SOC_CORE.pipe_u.flush_ex_haz
+@200
+-AXI CORDIC
+@28
+tb_timing_diagram.SOC_CORE.cordic_busy
+tb_timing_diagram.SOC_CORE.axi_master_inst.m_axi_awvalid
+tb_timing_diagram.SOC_CORE.axi_master_inst.m_axi_awready
+@22
+tb_timing_diagram.SOC_CORE.axi_master_inst.m_axi_awaddr[31:0]
+tb_timing_diagram.SOC_CORE.axi_master_inst.m_axi_wdata[31:0]
+@200
+-AXI SYSTOLIC
+@28
+tb_timing_diagram.SOC_CORE.systolic_busy
+tb_timing_diagram.SOC_CORE.axi_master_systolic_inst.m_axi_awvalid
+tb_timing_diagram.SOC_CORE.axi_master_systolic_inst.m_axi_awready
+@22
+tb_timing_diagram.SOC_CORE.axi_master_systolic_inst.m_axi_awaddr[31:0]
+tb_timing_diagram.SOC_CORE.axi_master_systolic_inst.m_axi_wdata[31:0]
