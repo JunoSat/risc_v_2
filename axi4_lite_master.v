@@ -111,13 +111,13 @@ module axi4_lite_master (
                         w_done_int <= 1;
                     end
                     
-                    if ((aw_done_int || (m_axi_awvalid && m_axi_awready)) &&
-                        (w_done_int  || (m_axi_wvalid  && m_axi_wready))) begin
-                        m_axi_awvalid <= 0;
-                        m_axi_wvalid  <= 0;
-                        state         <= STATE_BRESP;
-                        m_axi_bready  <= 1;
-                    end
+                        if ((aw_done_int || (m_axi_awvalid && m_axi_awready)) &&
+                            (w_done_int  || (m_axi_wvalid  && m_axi_wready))) begin
+                            m_axi_awvalid <= 0;
+                            m_axi_wvalid  <= 0;
+                            state         <= STATE_BRESP;
+                            m_axi_bready  <= 1;
+                        end
                 end
 
                 STATE_BRESP: begin
