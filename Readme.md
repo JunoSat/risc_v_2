@@ -6,7 +6,7 @@ This project implements a fully custom, 5-stage pipelined RISC-V processor confo
 ### Key Features
 - **RV32I Base Integer Set**: Full 32-bit integer instruction support.
 - **RV32M Multiply/Divide Extension**: Dedicated hardware multiplier and divider unit that correctly handles signed/unsigned operations and architectural edge cases.
-- **RV32F Single-Precision Floating-Point**: Fully custom FPU supporting hardware addition, subtraction, multiplication, iterative division, sign-injection, and bi-directional float-integer conversions.
+- **RV32F Single-Precision Floating-Point**: Fully custom FPU supporting hardware addition, subtraction, multiplication, iterative division, sign-injection, and bi-directional float-integer conversions. (Had to lower the effective frequency to avoid setup time violations.)
 - **Memory-Mapped Accelerators (AXI4-Lite)**:
   - **4x4 Systolic Array**: Computes wavefront matrix multiplications.
   - **Iterative CORDIC**: Hardware trigonometric solver for Sine/Cosine.
