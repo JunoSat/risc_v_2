@@ -113,7 +113,12 @@ module fpu(
                             mant_res <= {1'b1, a[22:0]} * {1'b1, b[22:0]}; state <= NORMALIZE;
                         end
                         else if (funct5 == FDIV_S) begin
-                            if (b[30:0] == 0) begin final_res <= 32'h7F800000; final_exc <= 1; state <= DONE_STATE; end
+                            if (b[30:0] == 0) begin 
+                                if (a[30:0] == 0) final_res <= 32'h7FC00000; // NaN for 0 / 0
+                                else final_res <= {sign_a ^ b[31], 8'hFF, 23'b0}; // +/- Infinity
+                                final_exc <= 0; // RV32F standard sets CSR flags, but does not hard-trap
+                                state <= DONE_STATE; 
+                            end
                             else begin
                                 sign_res <= sign_a ^ b[31]; exp_res <= exp_a - exp_b + 127;
                                 iter_div <= {2'b0, 1'b1, b[22:0]}; iter_acc <= {4'b0, 1'b1, a[22:0], 25'b0}; // FIX: 4'b0 instead of 3'b0 to make 53 bits total
@@ -191,13 +196,17 @@ module fpu(
                               32'h0;
 
     reg [31:0] cvt_ws_result;
-    reg [7:0] true_exp;
-    reg [47:0] shifted_mant;
+    reg [7:0] t_exp;
+    reg [63:0] expanded_mant;
+    reg [63:0] shifted_up;
+    reg [31:0] int_mag;
+    
     always @(*) begin
-        // Prevent latches by assigning defaults
         cvt_ws_result = 32'd0;
-        true_exp      = 8'd0;
-        shifted_mant  = 48'd0;
+        t_exp = 8'd0;
+        expanded_mant = 64'd0;
+        shifted_up = 64'd0;
+        int_mag = 32'd0;
 
         if (funct5 == FCVT_W_S) begin // FCVT.W.S (Float to Int)
             if (a[30:23] < 127) begin
@@ -205,14 +214,13 @@ module fpu(
             end else if (a[30:23] >= 127 + 31) begin
                 cvt_ws_result = a[31] ? 32'h80000000 : 32'h7FFFFFFF;
             end else begin
-                true_exp = a[30:23] - 127;
-                shifted_mant = {24'b0, 1'b1, a[22:0]};
-                if (true_exp < 23)
-                    shifted_mant = shifted_mant >> (23 - true_exp);
-                else
-                    shifted_mant = shifted_mant << (true_exp - 23);
+                // Use a standard left-shift to avoid variable right-shift signedness issues in synthesis
+                t_exp = a[30:23] - 8'd127;
+                expanded_mant = {40'd0, 1'b1, a[22:0]};
+                shifted_up = expanded_mant << t_exp;
+                int_mag = shifted_up[54:23];
                 
-                cvt_ws_result = a[31] ? -shifted_mant[31:0] : shifted_mant[31:0];
+                cvt_ws_result = a[31] ? (~int_mag + 1) : int_mag;
             end
         end
     end

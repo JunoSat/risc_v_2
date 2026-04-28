@@ -188,8 +188,8 @@ module pipe #(
     wire        id_fp_writes_int;
     wire        ex_fp_writes_int;
 
-    assign id_fp_rdata1  = (wb_fp_reg_write && (wb_rd == id_rs1)) ? wb_result : fp_regs_rdata1;
-    assign id_fp_rdata2  = (wb_fp_reg_write && (wb_rd == id_rs2)) ? wb_result : fp_regs_rdata2;
+    assign id_fp_rdata1  = (wb_fp_reg_write && wb_rd == id_rs1 && wb_rd != 5'd0 && !stall) ? wb_result : fp_regs_rdata1;
+    assign id_fp_rdata2  = (wb_fp_reg_write && wb_rd == id_rs2 && wb_rd != 5'd0 && !stall) ? wb_result : fp_regs_rdata2;
 
     fp_regfile u_fp_regfile (
         .clk    (clk),

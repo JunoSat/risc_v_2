@@ -103,6 +103,18 @@ module tb_fpu;
         #5; // Wait for result to settle on DONE_STATE
         $display("3.50 / 0.50 = 0x%h", result);
         fp_en = 0;
+        #10;
+        
+        $display("\n--- Testing FDIV.S (Divide by Zero) ---");
+        // a = 3.50, b = 0.0. Expected Infinity = 0x7F800000
+        a = 32'h40600000;
+        b = 32'h00000000;
+        fp_en = 1;
+        #5;
+        wait(!stall_fpu);
+        #5;
+        $display("3.50 / 0.00 = 0x%h", result);
+        fp_en = 0;
         
         $finish;
     end
