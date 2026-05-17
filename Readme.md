@@ -43,7 +43,7 @@ This project implements a fully custom, 5-stage pipelined RISC-V processor confo
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### Key Design Properties
+### Design Properties
 
 | Property         | Value                             |
 | ---------------- | --------------------------------- |
