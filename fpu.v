@@ -225,10 +225,25 @@ module fpu(
         end
     end
 
+    // Correct Floating-Point Comparison Logic (FEQ.S, FLT.S, FLE.S)
+    wire a_is_zero = (a[30:0] == 31'b0);
+    wire b_is_zero = (b[30:0] == 31'b0);
+    wire both_zero = a_is_zero && b_is_zero;
+    wire a_neg     = a[31];
+    wire b_neg     = b[31];
+
+    wire feq_val = (a == b) || both_zero;
+    wire flt_val = both_zero ? 1'b0 :
+                   (a_neg && !b_neg) ? 1'b1 :
+                   (!a_neg && b_neg) ? 1'b0 :
+                   (a_neg && b_neg) ? (a[30:0] > b[30:0]) : // Both negative: larger magnitude is smaller
+                   (a[30:0] < b[30:0]);                      // Both positive: smaller magnitude is smaller
+    wire fle_val = feq_val || flt_val;
+
     assign result = (fp_en && funct5 == FCVT_S_W) ? cvt_sw_result : 
                     (fp_en && funct5 == FCVT_W_S) ? cvt_ws_result :
                     (fp_en && funct5 == 5'b00100) ? sgnj_result   : // FSGNJ.S
-                    (fp_en && funct5 == FCMP_S)   ? {31'b0, (funct3 == 3'b010 ? (a == b) : ($signed(a) < $signed(b)))} : 
+                    (fp_en && funct5 == FCMP_S)   ? {31'b0, (funct3 == 3'b010 ? feq_val : (funct3 == 3'b001 ? flt_val : fle_val))} : 
                     (fp_en && funct5 == FMV_X_W)  ? a :             // FMV.X.W
                     (fp_en && funct5 == FMV_W_X)  ? a :             // FMV.W.X
                     final_res;
